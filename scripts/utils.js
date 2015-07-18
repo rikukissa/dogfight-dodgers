@@ -9,3 +9,7 @@ export function toObject(...keys) {
     return zipObject(keys, values);
   }
 }
+
+export function clamp(min, max, num) {
+  return Math.min(Math.max(num, min), max);
+};
