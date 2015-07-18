@@ -48,6 +48,9 @@ module.exports = {
     }, {
       test: /\.styl$/,
       loaders: ['style', 'css', 'stylus']
+    }, {
+      test: /\.mp3$/,
+      loaders: ['file']
     }
       // ,
       // {
