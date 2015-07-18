@@ -1,0 +1,8 @@
+script: bash ./deploy.sh
+language: node_js
+node_js:
+- "0.10"
+env:
+  global:
+  - GH_REF: github.com/rikukissa/dogfight-dodgers.git
+  - secure: "LYUN94pwdDxnxKUiF1K39EYrl1KNthIACLiozaqY8sPDcKWZp0MW/4kO4ayP80d3uMlCbH0FObInJ8nTn1q6ZsS1k/qzeTQB9K5j3cwljKIN/hC/P+Awngi1nYXyAGES8sON6MECqSYvXWYkJ+G/BZRyQH8DrGxWDfY7KbEZ+NQpNbSmZjTVV4/Q/zG5eM+8z+lTzY5Hm2qffZx1xlFsgC9JOZ71m0zcAoo/CP3C0jDb2W9QyLG4/pry3CKEJ50YqPGf3ya5rJ+1lgNiiJX6p2b5CZWpkFBpatEvG0pDf5xrYlCJr06BvG08RbA6D4aJLJiHseh3pjoEcbbtQ+DDsegVIQSfLeyasyZ0z/a2nVVQieJr0uJpmONgSaZCfYX7g+xUx0QM1t9E/bthItPYQSulsnMkEkwk7sUQG84V3VvjwPrZ6RNQhDpXTg1rWdyY9o0FbEVztR96thP454jc5vI/DUmLp3JBa774+8KyylqK/soMgXdTmNVU/4j6L54bt8lDbTI8Ixof8dWCkXw8mpQvMVpqI7H8ygTT5AljwnSNHhmMblybvoZq1FqPg4DSyTTmQ48RP0ICeA9efwwKazvNigXDx2tsQfXVvUIj133pdFo1sJKCVJNSk/ZwkBtowO4bweAZefqjG5FHdBh94mYONWT3DTSzaePshpYkFfo="
