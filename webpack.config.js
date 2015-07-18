@@ -29,9 +29,9 @@ module.exports = {
   devtool: 'inline-source-map',
   entry: entries,
   output: {
-    path: path.join(__dirname, 'build'),
+    path: path.join(__dirname, 'dist/'),
     filename: 'bundle.js',
-    publicPath: '/scripts/'
+    publicPath: '/dist/'
   },
   plugins: plugins,
   resolve: {
