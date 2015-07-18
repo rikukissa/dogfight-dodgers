@@ -4,12 +4,12 @@ const ctx = canvas.getContext('2d');
 document.body.appendChild(canvas);
 
 function resize() {
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 
 window.addEventListener('resize', resize);
-setTimeout(resize);
+resize()
 
 
 module.exports = {canvas,ctx};
