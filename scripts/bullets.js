@@ -4,6 +4,14 @@ import extend from 'deep-extend';
 const WIDTH = 0.75;
 const HEIGHT = 0.3;
 
+export const initial = {
+  bullets: [],
+  sounds: {
+    created: []
+  }
+};
+
+
 function initialBullet(player) {
 
   const sin = Math.sin(radians(player.angle));
@@ -30,25 +38,32 @@ function initialBullet(player) {
   }
 }
 
+function updateBullet(bullet) {
+  const newBullet = extend({}, bullet);
+
+  newBullet.position.x = bullet.position.x + bullet.velocity.x,
+  newBullet.position.y = bullet.position.y + bullet.velocity.y
+  newBullet.ticksLived++;
+
+  return newBullet;
+}
+
 export function update(bullets, [player, input]) {
-  const newBullets = bullets.reduce((bullets, bullet) => {
+  const updatedBullets = bullets.bullets.reduce((bullets, bullet) => {
     if(bullet.ticksLived > 25) {
       return bullets;
     }
-
-    const newBullet = extend({}, bullet);
-
-    newBullet.position.x = bullet.position.x + bullet.velocity.x,
-    newBullet.position.y = bullet.position.y + bullet.velocity.y
-    newBullet.ticksLived++;
-
-    return bullets.concat(newBullet);
+    return bullets.concat(updateBullet(bullet));
   }, []);
 
-  // Add new bullets
-  return input.shoot.reduce((bullets) => {
-    return bullets.concat(initialBullet(player));
-  }, newBullets);
+  return {
+    bullets: updatedBullets.concat(input.shoot.map(
+      () => initialBullet(player)
+    )),
+    sounds: {
+      created: input.shoot.map(() => true)
+    }
+  }
 }
 
 require('./hotReplaceNotifier')();

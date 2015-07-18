@@ -71,7 +71,7 @@ function renderObject(object, spriteName) {
   ctx.restore()
 }
 
-function renderBullets(bullets) {
+function renderBullets({bullets}) {
   bullets.forEach(bullet => renderObject(bullet, 'bullet'));
 }
 

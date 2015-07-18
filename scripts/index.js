@@ -68,7 +68,7 @@ function createGameLoop(input$, initials) {
 
 const game$ = createGameLoop(input$.filter(isRunning$), {
   player: player.initial,
-  bullets: []
+  bullets: bullets.initial
 });
 
 const futures$ = Bacon.zipWith((initialState, futureInput) => {
