@@ -1,84 +1,88 @@
-import identity from 'lodash.identity';
-import extend from 'extend';
 import Bacon from 'baconjs';
-require('bacon.animationframe');
-require('./bufferUntilValue');
+import {render, renderFuture} from './render';
+import {toObject} from './utils';
+import identity from 'lodash.identity';
+
+import 'bacon.animationframe';
+import './bufferUntilValue';
+
+import * as player from './player';
+import * as bullets from './bullets';
+
+import {record, isRunning$, selectedState$, futureInput$} from './recorder';
 
 import {
   FRAME_RATE,
-  SPACE_KEY
+  SPACE_KEY,
+  UP_KEY,
+  DOWN_KEY,
+  LEFT_KEY,
+  LEFT_ARROW_KEY,
+  RIGHT_KEY,
+  RIGHT_ARROW_KEY
 } from './constants';
 
-import {record, selectedState$, isRunning$, futureInput$} from './store'
-import createGameLoop from './gameLoop'
-import {initialBird} from './bird'
-import {initialWorld} from './world'
-import {initialPipes} from './pipes'
-import {toObject} from './utils'
-
-const uiInteraction$ = new Bacon.Bus();
-const shouldInputBeBlocked$ = uiInteraction$.map('.endCountdown').toProperty().startWith(false);
-
 // User events
-const spacePressed$ = Bacon.fromEvent(window, 'keydown').map('.keyCode').filter(x => x === SPACE_KEY);
-const mouseClicked$ = Bacon.fromEvent(window, 'click')
+const keyDown$ = Bacon.fromEvent(window, 'keydown').map('.keyCode')
+const keyUp$ = Bacon.fromEvent(window, 'keyup').map('.keyCode')
+const mouseMove$ = Bacon.fromEvent(window, 'mousemove');
 
-// Game tick
-const tick$ = Bacon.scheduleAnimationFrame().bufferWithTime(FRAME_RATE);
-const userClicksForFrame$ = mouseClicked$
-  .merge(spacePressed$)
-  .filter(shouldInputBeBlocked$.not())
-  .bufferUntilValue(tick$);
+const is = val => val2 => val === val2;
 
+const tick$ = Bacon
+  .scheduleAnimationFrame()
+  .bufferWithTime(FRAME_RATE);
 
-// Input caused by game state
-const input$ = Bacon.zipWith((clicks, ui) => {
-  return extend(ui, {clicks});
-}, userClicksForFrame$, uiInteraction$).filter(isRunning$)
+function toKeyStream(keyCode) {
+  return keyDown$
+    .filter(is(keyCode))
+    .map(true)
+    .merge(keyUp$.filter(is(keyCode)).map(false))
+    .toProperty(false)
+    .sampledBy(tick$);
+}
+
+const input$ = Bacon.zipWith(
+  (up, down, left, right, leftArrow, rightArrow, shoot) => ({shoot, keys: {up, down, left, right, leftArrow, rightArrow}}),
+  toKeyStream(UP_KEY),
+  toKeyStream(DOWN_KEY),
+  toKeyStream(LEFT_KEY),
+  toKeyStream(RIGHT_KEY),
+  toKeyStream(LEFT_ARROW_KEY),
+  toKeyStream(RIGHT_ARROW_KEY),
+  keyDown$.filter(is(SPACE_KEY)).bufferUntilValue(tick$)
+)
+
+function createGameLoop(input$, initials) {
+  const updatedPlayer$ = input$.scan(initials.player, player.update)
+
+  const updatedBullets$ = Bacon.zipAsArray(updatedPlayer$, input$)
+  .scan(initials.bullets, bullets.update);
+
+  const game$ = Bacon.zipWith(
+    toObject('player', 'bullets'),
+    updatedPlayer$,
+    updatedBullets$);
+
+  return game$;
+}
+
+const game$ = createGameLoop(input$.filter(isRunning$), {
+  player: player.initial,
+  bullets: []
+});
 
 const futures$ = Bacon.zipWith((initialState, futureInput) => {
   return createGameLoop(Bacon.fromArray(futureInput), initialState);
 }, selectedState$, futureInput$).flatMap(identity);
 
+
+game$.merge(selectedState$).onValue(render);
+
 Bacon
   .combineAsArray(futures$, selectedState$)
-  .onValues(require('./render').renderFuture)
-
-const game$ = createGameLoop(input$, {
-  bird: initialBird,
-  pipes: initialPipes,
-  world: initialWorld
-});
+  .onValues(renderFuture)
 
 Bacon.zipWith(toObject('state', 'input'), game$, input$).onValue(record);
-
-game$.scan({
-  endCountdown: 0,
-  gameEnds: false
-}, (state, {output}) => {
-
-    const newState = extend({}, state);
-
-    if(newState.endCountdown) {
-      newState.endCountdown++;
-    }
-
-    if(!newState.endCountdown && (output.birdTouchedGround || output.birdTouchedPipe)) {
-      newState.endCountdown = 1;
-    }
-
-    if(newState.endCountdown > 100) {
-      newState.gameEnds = true;
-    }
-
-    if(output.gameRestarted) {
-      newState.endCountdown = 0;
-      newState.gameEnds = false;
-    }
-    return newState;
-}).onValue(uiInteraction$.push.bind(uiInteraction$))
-
-// Rendering
-game$.merge(selectedState$).onValue(require('./render'));
 
 

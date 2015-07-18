@@ -1,7 +1,7 @@
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 
-document.getElementById('game').appendChild(canvas);
+document.body.appendChild(canvas);
 
 function resize() {
   canvas.width = canvas.offsetWidth;
@@ -9,7 +9,7 @@ function resize() {
 }
 
 window.addEventListener('resize', resize);
-resize();
+setTimeout(resize);
 
 
 module.exports = {canvas,ctx};
