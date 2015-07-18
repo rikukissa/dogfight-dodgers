@@ -1,5 +1,6 @@
 import Bacon from 'baconjs';
 import {render, renderFuture} from './render';
+import {playSounds} from './sounds';
 import {toObject} from './utils';
 import identity from 'lodash.identity';
 
@@ -74,8 +75,10 @@ const futures$ = Bacon.zipWith((initialState, futureInput) => {
   return createGameLoop(Bacon.fromArray(futureInput), initialState);
 }, selectedState$, futureInput$).flatMap(identity);
 
+const gameState$ = game$.merge(selectedState$);
 
-game$.merge(selectedState$).onValue(render);
+gameState$.onValue(render);
+gameState$.onValue(playSounds);
 
 Bacon
   .combineAsArray(futures$, selectedState$)

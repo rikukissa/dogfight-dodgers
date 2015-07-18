@@ -5,9 +5,6 @@ import {canvas, ctx} from './canvas'
 import {WORLD_WIDTH} from './constants';
 import {clamp} from './utils';
 
-import audio from 'browser-audio';
-const shootSound = audio.create(require('../assets/sounds/shot.mp3'));
-
 require('./style.css');
 
 function image(src) {
@@ -79,19 +76,9 @@ function renderObject(object, spriteName) {
   ctx.restore()
 }
 
-const renderBullets = (function() {
-  let lastBullets = 0;
-
-  return function renderBullets(bullets) {
-    bullets.forEach(bullet => renderObject(bullet, 'bullet'));
-
-    if(bullets.length > lastBullets) {
-      shootSound.play()
-    }
-
-    lastBullets = bullets.length;
-  }
-})()
+function renderBullets(bullets) {
+  bullets.forEach(bullet => renderObject(bullet, 'bullet'));
+}
 
 function renderPlayer(player) {
   renderObject(player, 'plane');
