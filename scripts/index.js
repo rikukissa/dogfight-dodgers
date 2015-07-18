@@ -9,6 +9,7 @@ import './bufferUntilValue';
 
 import * as player from './player';
 import * as bullets from './bullets';
+import * as world from './world';
 
 import {record, isRunning$, selectedState$, futureInput$} from './recorder';
 
@@ -58,17 +59,22 @@ function createGameLoop(input$, initials) {
   const updatedBullets$ = Bacon.zipAsArray(updatedPlayer$, input$)
   .scan(initials.bullets, bullets.update);
 
+  const updatedWorld$ = Bacon.zipAsArray(updatedPlayer$, input$)
+  .scan(initials.world, world.update);
+
   const game$ = Bacon.zipWith(
-    toObject('player', 'bullets'),
+    toObject('player', 'bullets', 'world'),
     updatedPlayer$,
-    updatedBullets$);
+    updatedBullets$,
+    updatedWorld$);
 
   return game$;
 }
 
 const game$ = createGameLoop(input$.filter(isRunning$), {
   player: player.initial,
-  bullets: bullets.initial
+  bullets: bullets.initial,
+  world: world.initial
 });
 
 const futures$ = Bacon.zipWith((initialState, futureInput) => {

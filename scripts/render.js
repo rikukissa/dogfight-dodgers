@@ -2,18 +2,12 @@ import radians from 'degrees-radians';
 import extend from 'extend';
 import range from 'lodash.range';
 import {canvas, ctx} from './canvas'
-import {WORLD_WIDTH} from './constants';
-import {clamp, randomGenerator} from './utils';
+import {WIDTH} from './world';
+import {clamp, randomGenerator, image, memoizeArgs} from './utils';
 
 const RANDOM_SEED = Math.ceil(Math.random() * 1000);
 
 require('./style.css');
-
-function image(src) {
-  const img = new Image();
-  img.src = src;
-  return img;
-}
 
 const sprites = {
   plane: {
@@ -79,6 +73,14 @@ function renderPlayer(player) {
   renderObject(player, 'plane');
 }
 
+const toggleDangerZone = memoizeArgs(function(active) {
+  document.body.classList.toggle('danger-zone', active);
+});
+
+function renderWorld(world) {
+  toggleDangerZone(world.dangerZone);
+}
+
 
 function rectPath(x, y, w, h) {
   ctx.beginPath();
@@ -101,7 +103,7 @@ function renderBackgroundLayer(index, strokeStyle, fillStyle, maxHeight, minHeig
 
   const random = randomGenerator(RANDOM_SEED + index * 1000);
   const startX = spaceBetween / 2 * random();
-  const bounces = Math.floor(scale(WORLD_WIDTH) / spaceBetween);
+  const bounces = Math.floor(scale(WIDTH) / spaceBetween);
 
   const y = (y) => canvas.height - groundLevel - y;
 
@@ -139,7 +141,7 @@ function renderBackground(translation) {
   ctx.fillStyle = '#7f786f';
   ctx.lineWidth = 2;
 
-  rectPath(0, canvas.height - groundLevel, scale(WORLD_WIDTH), groundLevel)
+  rectPath(0, canvas.height - groundLevel, scale(WIDTH), groundLevel)
 
   ctx.fill()
   ctx.stroke()
@@ -151,12 +153,12 @@ function cameraTranslation(player) {
   const playerOnCanvas = gameToCanvas(player.position);
 
   return {
-    x: Math.max(-(WORLD_WIDTH / SCALE - canvas.width), Math.min(0, canvas.width / 2 - playerOnCanvas.x)),
+    x: Math.max(-(WIDTH / SCALE - canvas.width), Math.min(0, canvas.width / 2 - playerOnCanvas.x)),
     y: Math.max(0, canvas.height / 2 - playerOnCanvas.y)
   }
 }
 
-export function render({player, bullets}) {
+export function render({player, bullets, world}) {
   ctx.save()
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const translation = cameraTranslation(player);
@@ -165,10 +167,11 @@ export function render({player, bullets}) {
   renderBackground(translation);
   renderPlayer(player);
   renderBullets(bullets);
+  renderWorld(world);
   ctx.restore()
 }
 
-export function renderFuture(future, {player, bullets}) {
+export function renderFuture(future, {player, bullets, world}) {
   ctx.save();
   ctx.globalAlpha = 0.3;
 
@@ -180,6 +183,7 @@ export function renderFuture(future, {player, bullets}) {
 
   renderPlayer(future.player);
   renderBullets(future.bullets);
+  renderWorld(future.world);
   ctx.restore();
 }
 

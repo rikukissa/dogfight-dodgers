@@ -20,3 +20,20 @@ export function toObject(...keys) {
 export function clamp(min, max, num) {
   return Math.min(Math.max(num, min), max);
 };
+
+export function image(src) {
+  const img = new Image();
+  img.src = src;
+  return img;
+}
+
+export function memoizeArgs(fn) {
+  let lastArgument;
+
+  return function(argument) {
+    if(typeof lastArgument === 'undefined' || lastArgument !== argument) {
+      fn(argument);
+    }
+    lastArgument = argument;
+  }
+}
