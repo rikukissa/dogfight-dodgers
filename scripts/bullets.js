@@ -5,14 +5,21 @@ const WIDTH = 0.75;
 const HEIGHT = 0.3;
 
 function initialBullet(player) {
+
+  const sin = Math.sin(radians(player.angle));
+  const cos = Math.cos(radians(player.angle));
+
+  // bullet hole isn't right in the middle of the plane
+  const yOffset = player.dimensions.height * 0.06;
+
   return {
     position: {
-      x: player.position.x + (player.dimensions.width / 2 + (WIDTH / 2)) * Math.cos(radians(player.angle)),
-      y: player.position.y - (player.dimensions.height / 2 + (WIDTH / 2)) * Math.sin(radians(player.angle))
+      x: player.position.x + (player.dimensions.width / 2 + (WIDTH / 2)) * cos + yOffset * sin,
+      y: player.position.y - (player.dimensions.width / 2 + (WIDTH / 2)) * sin + yOffset * cos
     },
     velocity: {
-      x: player.velocity.x + 0.5 * Math.cos(radians(player.angle)),
-      y: player.velocity.y - 0.5 * Math.sin(radians(player.angle))
+      x: player.velocity.x + 0.5 * cos,
+      y: player.velocity.y - 0.5 * sin
     },
     dimensions: {
       width: WIDTH,
