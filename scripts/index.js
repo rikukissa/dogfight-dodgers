@@ -43,13 +43,11 @@ function toKeyStream(keyCode) {
 }
 
 const input$ = Bacon.zipWith(
-  (up, down, left, right, leftArrow, rightArrow, shoot) => ({shoot, keys: {up, down, left, right, leftArrow, rightArrow}}),
+  (up, down, left, right, shoot) => ({shoot, keys: {up, down, left, right}}),
   toKeyStream(UP_KEY),
   toKeyStream(DOWN_KEY),
   toKeyStream(LEFT_KEY),
   toKeyStream(RIGHT_KEY),
-  toKeyStream(LEFT_ARROW_KEY),
-  toKeyStream(RIGHT_ARROW_KEY),
   keyDown$.filter(is(SPACE_KEY)).bufferUntilValue(tick$)
 )
 

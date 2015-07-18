@@ -33,11 +33,11 @@ export function update(player, input) {
     newPlayer.throttle = 0;
   }
 
-  if(input.keys.leftArrow) {
+  if(input.keys.left) {
     newPlayer.angle -= 2;
   }
 
-  if(input.keys.rightArrow) {
+  if(input.keys.right) {
     newPlayer.angle += 2;
   }
 
