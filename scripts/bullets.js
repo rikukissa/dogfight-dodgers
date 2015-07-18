@@ -1,12 +1,8 @@
 import radians from 'degrees-radians';
 import extend from 'deep-extend';
-import audio from 'browser-audio';
 
 const WIDTH = 0.75;
 const HEIGHT = 0.3;
-
-const shootSound = audio.create(require('../assets/sounds/shot.mp3'));
-
 
 function initialBullet(player) {
 
@@ -51,9 +47,6 @@ export function update(bullets, [player, input]) {
 
   // Add new bullets
   return input.shoot.reduce((bullets) => {
-
-    shootSound.play()
-
     return bullets.concat(initialBullet(player));
   }, newBullets);
 }
