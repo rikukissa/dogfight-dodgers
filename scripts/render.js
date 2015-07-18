@@ -3,7 +3,9 @@ import extend from 'extend';
 import range from 'lodash.range';
 import {canvas, ctx} from './canvas'
 import {WORLD_WIDTH} from './constants';
-import {clamp} from './utils';
+import {clamp, randomGenerator} from './utils';
+
+const RANDOM_SEED = Math.ceil(Math.random() * 1000);
 
 require('./style.css');
 
@@ -21,17 +23,6 @@ const sprites = {
   bullet: {
     image: image(require('url!../assets/bullet.png')),
     w: 40, h: 16
-  },
-  background: {
-    w: 3000,
-    h: 171,
-    layers: [
-      image(require('url!../assets/layer0.png')),
-      image(require('url!../assets/layer1.png')),
-      image(require('url!../assets/layer2.png')),
-      image(require('url!../assets/layer4.png')),
-      image(require('url!../assets/layer5.png'))
-    ]
   }
 }
 
@@ -44,6 +35,10 @@ function drawSprite(context, sprite, x, y, w, h) {
  */
 
 const SCALE = 1/35;
+
+function scale(num) {
+  return num / SCALE;
+}
 
 function gameToCanvas({x, y}) {
   return {
@@ -84,20 +79,72 @@ function renderPlayer(player) {
   renderObject(player, 'plane');
 }
 
-function renderBackground(translation) {
-  const width = WORLD_WIDTH / SCALE;
-  const {w, h} = sprites.background;
-  const ratio = w / width;
-  const height = h / ratio;
 
-  sprites.background.layers.forEach((layer, i) => {
-    ctx.drawImage(layer,
-      (translation.x / 20 * i), 0,
-      w, h,
-      0, canvas.height - height,
-      width, height
+function rectPath(x, y, w, h) {
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + w, y)
+  ctx.lineTo(x + w, y + h)
+  ctx.lineTo(x, y + h)
+  ctx.closePath()
+ }
+
+function renderBackgroundLayer(index, strokeStyle, fillStyle, maxHeight, minHeight, spaceBetween) {
+  const groundLevel = scale(1.5);
+
+  ctx.save()
+
+  ctx.strokeStyle = strokeStyle;
+  ctx.fillStyle = fillStyle;
+  ctx.lineWidth = 2;
+  ctx.beginPath()
+
+  const random = randomGenerator(RANDOM_SEED + index * 1000);
+  const startX = spaceBetween / 2 * random();
+  const bounces = Math.floor(scale(WORLD_WIDTH) / spaceBetween);
+
+  const y = (y) => canvas.height - groundLevel - y;
+
+  let startFrom = canvas.height - groundLevel;
+
+  for(let i = 0; i < bounces; i++) {
+    const endHeight = i === bounces - 1 ? y(0) : y(random() * maxHeight);
+
+    ctx.bezierCurveTo(
+      startX + i * spaceBetween,
+      startFrom,
+      i * spaceBetween + spaceBetween / 2,
+      Math.min(Math.min(startFrom, endHeight) - (maxHeight * 0.1), y(random() * maxHeight)),
+      (i + 1) * spaceBetween,
+      endHeight
     );
-  });
+    startFrom = endHeight;
+  }
+  ctx.closePath()
+  ctx.fill()
+  ctx.stroke()
+  ctx.restore()
+}
+
+function renderBackground(translation) {
+  const groundLevel = scale(1.5);
+
+  renderBackgroundLayer(0, '#8edbe2', '#8edbe2', 220, 70, 500)
+  renderBackgroundLayer(1, '#6cd0d9', '#6cd0d9', 100, 50, 300)
+  renderBackgroundLayer(2, '#9e917b', '#b6a78e', 80, 30, 200)
+  renderBackgroundLayer(3, '#91856e', '#9e917b', 50, 10, 200)
+
+  ctx.save()
+  ctx.strokeStyle = '#736c61';
+  ctx.fillStyle = '#7f786f';
+  ctx.lineWidth = 2;
+
+  rectPath(0, canvas.height - groundLevel, scale(WORLD_WIDTH), groundLevel)
+
+  ctx.fill()
+  ctx.stroke()
+  ctx.restore()
+
 }
 
 function cameraTranslation(player) {
@@ -112,7 +159,6 @@ function cameraTranslation(player) {
 export function render({player, bullets}) {
   ctx.save()
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   const translation = cameraTranslation(player);
   ctx.translate(translation.x, translation.y)
 

@@ -1,7 +1,14 @@
 import zipObject from 'lodash.zipobject';
 
-export function random(min, max) {
-  return Math.random() * (max - min) + min;
+export function randomGenerator(seed = 1) {
+  return function() {
+    const x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+  }
+}
+
+export function random(randomFn, min, max) {
+  return randomFn() * (max - min) + min;
 }
 
 export function toObject(...keys) {
