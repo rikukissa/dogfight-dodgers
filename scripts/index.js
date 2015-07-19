@@ -54,13 +54,13 @@ const input$ = Bacon.zipWith(
 )
 
 function createGameLoop(input$, initials) {
-  const updatedPlayer$ = input$.scan(initials.player, player.update)
+  const updatedPlayer$ = input$.scan(initials.player, player.update).skip(1)
 
   const updatedBullets$ = Bacon.zipAsArray(updatedPlayer$, input$)
-  .scan(initials.bullets, bullets.update);
+  .scan(initials.bullets, bullets.update).skip(1);
 
   const updatedWorld$ = Bacon.zipAsArray(updatedPlayer$, input$)
-  .scan(initials.world, world.update);
+  .scan(initials.world, world.update).skip(1);
 
   const game$ = Bacon.zipWith(
     toObject('player', 'bullets', 'world'),
