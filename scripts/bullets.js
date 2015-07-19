@@ -25,10 +25,7 @@ function initialBullet(player) {
       x: player.position.x + (player.dimensions.width / 2 + (WIDTH / 2)) * cos + yOffset * sin,
       y: player.position.y - (player.dimensions.width / 2 + (WIDTH / 2)) * sin + yOffset * cos
     },
-    velocity: {
-      x: player.velocity.x + 0.5 * cos,
-      y: player.velocity.y - 0.5 * sin
-    },
+    speed: player.thrust + 1,
     dimensions: {
       width: WIDTH,
       height: HEIGHT
@@ -41,8 +38,8 @@ function initialBullet(player) {
 function updateBullet(bullet) {
   const newBullet = extend({}, bullet);
 
-  newBullet.position.x = bullet.position.x + bullet.velocity.x,
-  newBullet.position.y = bullet.position.y + bullet.velocity.y
+  newBullet.position.x += bullet.speed * Math.sin(radians(bullet.angle + 90)),
+  newBullet.position.y += bullet.speed * Math.cos(radians(bullet.angle + 90))
   newBullet.ticksLived++;
 
   return newBullet;

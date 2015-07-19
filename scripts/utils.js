@@ -41,3 +41,7 @@ export function memoizeArgs(fn) {
 export function toRGB(arr) {
   return `rgb(${arr.join(',')})`;
 }
+
+export function degrees(radians) {
+  return radians / (Math.PI / 180);
+}

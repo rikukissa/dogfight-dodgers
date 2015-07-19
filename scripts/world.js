@@ -1,6 +1,6 @@
 import extend from 'deep-extend';
 
-export const WIDTH = 100;
+export const WIDTH = 1000;
 export const HEIGHT = 100;
 
 export const initial = {
