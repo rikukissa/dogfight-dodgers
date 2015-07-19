@@ -10,11 +10,8 @@ import {
   memoizeArgs,
   toRGB} from './utils';
 
-const RANDOM_SEED = Math.ceil(Math.random() * 1000);
 const SKY_COLOR = [168, 227, 233];
 const SPACE_COLOR = [17, 103, 125];
-
-
 
 require('./style.css');
 
@@ -100,18 +97,17 @@ function rectPath(x, y, w, h) {
   ctx.closePath()
  }
 
-function renderBackgroundLayer(index, strokeStyle, fillStyle, maxHeight, minHeight, spaceBetween) {
+function renderBackgroundLayer({strokeStyle, fillStyle, maxHeight, minHeight, spaceBetween}, randomFn) {
   const groundLevel = scale(1.5);
 
   ctx.save()
 
   ctx.strokeStyle = strokeStyle;
   ctx.fillStyle = fillStyle;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.beginPath()
 
-  const random = randomGenerator(RANDOM_SEED + index * 1000);
-  const startX = spaceBetween / 2 * random();
+
   const bounces = Math.floor(scale(WIDTH) / spaceBetween);
 
   const y = (y) => canvas.height - groundLevel - y;
@@ -119,13 +115,13 @@ function renderBackgroundLayer(index, strokeStyle, fillStyle, maxHeight, minHeig
   let startFrom = canvas.height - groundLevel;
 
   for(let i = 0; i < bounces; i++) {
-    const endHeight = i === bounces - 1 ? y(0) : y(random() * maxHeight);
+    const endHeight = i === bounces - 1 ? y(0) : y(minHeight / 2 * randomFn());
 
     ctx.bezierCurveTo(
-      startX + i * spaceBetween,
+      i * spaceBetween,
       startFrom,
       i * spaceBetween + spaceBetween / 2,
-      Math.min(Math.min(startFrom, endHeight) - (maxHeight * 0.1), y(random() * maxHeight)),
+      y(Math.max(minHeight, randomFn() * maxHeight)),
       (i + 1) * spaceBetween,
       endHeight
     );
@@ -137,13 +133,46 @@ function renderBackgroundLayer(index, strokeStyle, fillStyle, maxHeight, minHeig
   ctx.restore()
 }
 
+const layers = [
+  {
+    strokeStyle: '#8edbe2',
+    fillStyle: '#8edbe2',
+    maxHeight: 250,
+    minHeight: 200,
+    spaceBetween: 500
+  },
+  {
+    strokeStyle: '#6cd0d9',
+    fillStyle: '#6cd0d9',
+    maxHeight: 200,
+    minHeight: 100,
+    spaceBetween: 300
+  },
+  {
+    strokeStyle: '#9e917b',
+    fillStyle: '#b6a78e',
+    maxHeight: 120,
+    minHeight: 100,
+    spaceBetween: 250
+  },
+  {
+    strokeStyle: '#91856e',
+    fillStyle: '#9e917b',
+    maxHeight: 100,
+    minHeight: 80,
+    spaceBetween: 200
+  }
+].map((layer) => {
+  layer.seed = Math.ceil(Math.random() * 100);
+  return layer;
+});
+
 function renderBackground(translation) {
   const groundLevel = scale(1.5);
 
-  renderBackgroundLayer(0, '#8edbe2', '#8edbe2', 220, 70, 500)
-  renderBackgroundLayer(1, '#6cd0d9', '#6cd0d9', 100, 50, 300)
-  renderBackgroundLayer(2, '#9e917b', '#b6a78e', 80, 30, 200)
-  renderBackgroundLayer(3, '#91856e', '#9e917b', 50, 10, 200)
+  layers.forEach(layer => {
+    renderBackgroundLayer(layer, randomGenerator(layer.seed));
+  });
 
   ctx.save()
   ctx.strokeStyle = '#736c61';
