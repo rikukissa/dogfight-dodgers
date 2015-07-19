@@ -3,7 +3,6 @@ html, body, canvas {
   height: 100%;
   margin: 0;
   overflow: hidden;
-  background: #a8e3e9;
 }
 
 canvas {

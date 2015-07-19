@@ -2,10 +2,19 @@ import radians from 'degrees-radians';
 import extend from 'extend';
 import range from 'lodash.range';
 import {canvas, ctx} from './canvas'
-import {WIDTH} from './world';
-import {clamp, randomGenerator, image, memoizeArgs} from './utils';
+import {WIDTH, HEIGHT} from './world';
+import {
+  clamp,
+  randomGenerator,
+  image,
+  memoizeArgs,
+  toRGB} from './utils';
 
 const RANDOM_SEED = Math.ceil(Math.random() * 1000);
+const SKY_COLOR = [168, 227, 233];
+const SPACE_COLOR = [17, 103, 125];
+
+
 
 require('./style.css');
 
@@ -146,7 +155,6 @@ function renderBackground(translation) {
   ctx.fill()
   ctx.stroke()
   ctx.restore()
-
 }
 
 function cameraTranslation(player) {
@@ -158,9 +166,31 @@ function cameraTranslation(player) {
   }
 }
 
+function hueForHeight(position) {
+  const modifier = position / HEIGHT;
+
+  return SKY_COLOR.map((num, i) => {
+    return clamp(0, 255, Math.floor(num - (num - SPACE_COLOR[i]) * modifier));
+  });
+}
+
+function createGradient(player) {
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+
+  const canvasInGame = canvas.height * SCALE;
+
+  gradient.addColorStop(0, toRGB(hueForHeight(player.position.y)));
+  gradient.addColorStop(1, toRGB(hueForHeight(player.position.y - canvasInGame)));
+
+  return gradient;
+}
+
 export function render({player, bullets, world}) {
   ctx.save()
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = createGradient(player);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   const translation = cameraTranslation(player);
   ctx.translate(translation.x, translation.y)
 

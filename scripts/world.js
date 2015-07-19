@@ -1,6 +1,7 @@
 import extend from 'deep-extend';
 
 export const WIDTH = 100;
+export const HEIGHT = 100;
 
 export const initial = {
   dangerZone: false,

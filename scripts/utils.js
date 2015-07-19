@@ -37,3 +37,7 @@ export function memoizeArgs(fn) {
     lastArgument = argument;
   }
 }
+
+export function toRGB(arr) {
+  return `rgb(${arr.join(',')})`;
+}
