@@ -10,6 +10,7 @@ import './bufferUntilValue';
 import * as player from './player';
 import * as bullets from './bullets';
 import * as world from './world';
+import * as explosions from './explosions';
 
 import {record, isRunning$, selectedState$, futureInput$} from './recorder';
 
@@ -37,22 +38,22 @@ const tick$ = Bacon
   .bufferWithTime(FRAME_RATE);
 
 const delta$ = tick$.scan({
-  lastTime: null,
+  time: null,
   delta: 1
 }, (memo) => {
-  if(memo.lastTime === null) {
+  if(memo.time === null) {
     return {
-      lastTime: Date.now(),
+      time: Date.now(),
       delta: 1
     }
   }
   const time = Date.now();
 
   return {
-    lastTime: time,
-    delta: (time - memo.lastTime) / WORLD_SPEED
+    time: time,
+    delta: (time - memo.time) / WORLD_SPEED
   }
-}).map('.delta');
+});
 
 function toKeyStream(keyCode) {
   return keyDown$
@@ -64,7 +65,7 @@ function toKeyStream(keyCode) {
 }
 
 const input$ = Bacon.zipWith(
-  (delta, up, down, left, right, shoot) => ({delta, shoot, keys: {up, down, left, right}}),
+  ({delta, time}, up, down, left, right, shoot) => ({delta, time, shoot, keys: {up, down, left, right}}),
   delta$,
   toKeyStream(UP_KEY),
   toKeyStream(DOWN_KEY),
@@ -82,11 +83,19 @@ function createGameLoop(input$, initials) {
   const updatedWorld$ = Bacon.zipAsArray(updatedPlayer$, input$)
   .scan(initials.world, world.update).skip(1);
 
-  const game$ = Bacon.zipWith(
-    toObject('player', 'bullets', 'world'),
+  const updatedExplosions$ = Bacon.zipAsArray(
     updatedPlayer$,
     updatedBullets$,
-    updatedWorld$);
+    input$
+  ).scan(initials.explosions, explosions.update).skip(1);
+
+  const game$ = Bacon.zipWith(
+    toObject('player', 'bullets', 'world', 'explosions', 'input'),
+    updatedPlayer$,
+    updatedBullets$,
+    updatedWorld$,
+    updatedExplosions$,
+    input$);
 
   return game$;
 }
@@ -94,6 +103,7 @@ function createGameLoop(input$, initials) {
 const game$ = createGameLoop(input$.filter(isRunning$), {
   player: player.initial,
   bullets: bullets.initial,
+  explosions: explosions.initial,
   world: world.initial
 });
 

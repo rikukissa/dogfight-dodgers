@@ -3,6 +3,7 @@ import extend from 'extend';
 import range from 'lodash.range';
 import {canvas, ctx} from './canvas'
 import {WIDTH, HEIGHT} from './world';
+import {ALIVE_TIME} from './explosions';
 import {
   clamp,
   randomGenerator,
@@ -230,6 +231,24 @@ function renderBackground(translation) {
   ctx.restore()
 }
 
+function renderExplosions({explosions}, currentTime) {
+  ctx.save()
+  ctx.fillStyle = 'red';
+
+  explosions.forEach((explosion) => {
+    const delta = (currentTime - explosion.created) / ALIVE_TIME;
+
+    const multiplier = 1 - Math.abs(0.15 - delta);
+
+    const position = gameToCanvas(explosion.position);
+    ctx.fillRect(
+      position.x,
+      position.y,
+      20 * multiplier, 20 * multiplier)
+  })
+  ctx.restore()
+}
+
 function cameraTranslation(player) {
   const playerOnCanvas = gameToCanvas(player.position);
 
@@ -258,7 +277,7 @@ function createGradient(player) {
   return gradient;
 }
 
-export function render({player, bullets, world}) {
+export function render({player, bullets, world, explosions, input}) {
   ctx.save()
 
   ctx.fillStyle = createGradient(player);
@@ -272,6 +291,7 @@ export function render({player, bullets, world}) {
   renderPlayer(player);
   renderBullets(bullets);
   renderWorld(world);
+  renderExplosions(explosions, input.time);
   ctx.restore()
   ticker.tick()
 }
@@ -289,6 +309,7 @@ export function renderFuture(future, {player, bullets, world}) {
   renderPlayer(future.player);
   renderBullets(future.bullets);
   renderWorld(future.world);
+  renderExplosions(future.explosions);
   ctx.restore();
 }
 

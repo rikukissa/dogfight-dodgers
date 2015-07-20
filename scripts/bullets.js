@@ -4,6 +4,8 @@ import extend from 'deep-extend';
 const WIDTH = 0.75;
 const HEIGHT = 0.3;
 
+import {GROUND_LEVEL} from './world';
+
 export const initial = {
   bullets: [],
   sounds: {
@@ -31,7 +33,8 @@ function initialBullet(player) {
       height: HEIGHT
     },
     angle: player.angle,
-    ticksLived: 0
+    ticksLived: 0,
+    exploded: false
   }
 }
 
@@ -40,6 +43,11 @@ function updateBullet(bullet, delta) {
 
   newBullet.position.x += bullet.speed * Math.sin(radians(bullet.angle + 90)) * delta,
   newBullet.position.y += bullet.speed * Math.cos(radians(bullet.angle + 90)) * delta
+
+  if(newBullet.position.y <= GROUND_LEVEL) {
+    newBullet.exploded = true;
+  }
+
   newBullet.ticksLived++;
 
   return newBullet;
@@ -47,7 +55,7 @@ function updateBullet(bullet, delta) {
 
 export function update(bullets, [player, input]) {
   const updatedBullets = bullets.bullets.reduce((bullets, bullet) => {
-    if(bullet.ticksLived > 25) {
+    if(bullet.ticksLived > 25 || bullet.exploded) {
       return bullets;
     }
     return bullets.concat(updateBullet(bullet, input.delta));
