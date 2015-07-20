@@ -3,6 +3,7 @@ html, body, canvas {
   height: 100%;
   margin: 0;
   overflow: hidden;
+  font: 13px 'Helvetica Neue', Helvetica, Arial;
 }
 
 canvas {
@@ -16,11 +17,20 @@ canvas {
 #controls {
   box-sizing: border-box;
   padding: 0 1em;
-  width: 100%;
+  width: 200px;
   height: 100px;
   position: absolute;
   top: 0;
   left: 0;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+#frames:before {
+  content: 'total frames: ';
+}
+
+#fps:before {
+  content: 'fps: ';
 }
 
 #future-slider {

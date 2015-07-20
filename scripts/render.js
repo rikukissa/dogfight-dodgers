@@ -10,6 +10,12 @@ import {
   memoizeArgs,
   toRGB} from './utils';
 
+import fps from 'fps';
+const ticker = fps({every: 10});
+
+const $fps = document.getElementById('fps');
+ticker.on('data', framerate => $fps.innerHTML = Math.round(framerate));
+
 const SKY_COLOR = [168, 227, 233];
 const SPACE_COLOR = [17, 103, 125];
 
@@ -267,6 +273,7 @@ export function render({player, bullets, world}) {
   renderBullets(bullets);
   renderWorld(world);
   ctx.restore()
+  ticker.tick()
 }
 
 export function renderFuture(future, {player, bullets, world}) {
