@@ -35,11 +35,11 @@ function initialBullet(player) {
   }
 }
 
-function updateBullet(bullet) {
+function updateBullet(bullet, delta) {
   const newBullet = extend({}, bullet);
 
-  newBullet.position.x += bullet.speed * Math.sin(radians(bullet.angle + 90)),
-  newBullet.position.y += bullet.speed * Math.cos(radians(bullet.angle + 90))
+  newBullet.position.x += bullet.speed * Math.sin(radians(bullet.angle + 90)) * delta,
+  newBullet.position.y += bullet.speed * Math.cos(radians(bullet.angle + 90)) * delta
   newBullet.ticksLived++;
 
   return newBullet;
@@ -50,7 +50,7 @@ export function update(bullets, [player, input]) {
     if(bullet.ticksLived > 25) {
       return bullets;
     }
-    return bullets.concat(updateBullet(bullet));
+    return bullets.concat(updateBullet(bullet, input.delta));
   }, []);
 
   return {

@@ -24,10 +24,10 @@ function mod(num, from) {
   return (num % from + from) % from;
 }
 
-function stallPlane(player) {
+function stallPlane(player, delta) {
   const normalized = mod(player.angle + 90, 360);
   const distance = 180 - normalized;
-  return player.angle + distance * (0.05 - 0.04 * player.healt);
+  return player.angle + distance * (0.05 - 0.04 * player.healt) * delta;
 }
 
 export function update(player, input) {
@@ -35,17 +35,17 @@ export function update(player, input) {
   const newPlayer = extend({}, player);
 
   if(input.keys.up) {
-    newPlayer.throttle += 0.001;
+    newPlayer.throttle += 0.001 * input.delta;
   } else {
     newPlayer.throttle = 0;
   }
 
   if(input.keys.left) {
-    newPlayer.angle -= 4;
+    newPlayer.angle -= 4 * input.delta;
   } else if(input.keys.right) {
-    newPlayer.angle += 4;
+    newPlayer.angle += 4 * input.delta;
   } else if(newPlayer.position.y > GROUND_LEVEL) {
-    newPlayer.angle = stallPlane(newPlayer);
+    newPlayer.angle = stallPlane(newPlayer, input.delta);
   }
 
   newPlayer.angle = mod(newPlayer.angle, 360);
@@ -56,10 +56,9 @@ export function update(player, input) {
     newPlayer.position.y = GROUND_LEVEL;
   }
 
-  newPlayer.position.x += newPlayer.thrust * Math.sin(radians(newPlayer.angle + 90));
-  newPlayer.position.y += newPlayer.thrust * Math.cos(radians(newPlayer.angle + 90));
+  newPlayer.position.x += newPlayer.thrust * Math.sin(radians(newPlayer.angle + 90)) * input.delta;
+  newPlayer.position.y += newPlayer.thrust * Math.cos(radians(newPlayer.angle + 90)) * input.delta;
 
   return newPlayer;
 }
-
 require('./hotReplaceNotifier')();

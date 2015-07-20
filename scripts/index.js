@@ -15,6 +15,7 @@ import {record, isRunning$, selectedState$, futureInput$} from './recorder';
 
 import {
   FRAME_RATE,
+  WORLD_SPEED,
   SPACE_KEY,
   UP_KEY,
   DOWN_KEY,
@@ -35,6 +36,24 @@ const tick$ = Bacon
   .scheduleAnimationFrame()
   .bufferWithTime(FRAME_RATE);
 
+const delta$ = tick$.scan({
+  lastTime: null,
+  delta: 1
+}, (memo) => {
+  if(memo.lastTime === null) {
+    return {
+      lastTime: Date.now(),
+      delta: 1
+    }
+  }
+  const time = Date.now();
+
+  return {
+    lastTime: time,
+    delta: (time - memo.lastTime) / WORLD_SPEED
+  }
+}).map('.delta');
+
 function toKeyStream(keyCode) {
   return keyDown$
     .filter(is(keyCode))
@@ -45,7 +64,8 @@ function toKeyStream(keyCode) {
 }
 
 const input$ = Bacon.zipWith(
-  (up, down, left, right, shoot) => ({shoot, keys: {up, down, left, right}}),
+  (delta, up, down, left, right, shoot) => ({delta, shoot, keys: {up, down, left, right}}),
+  delta$,
   toKeyStream(UP_KEY),
   toKeyStream(DOWN_KEY),
   toKeyStream(LEFT_KEY),
