@@ -2,7 +2,7 @@ import radians from 'degrees-radians';
 import {degrees} from './utils';
 import extend from 'deep-extend';
 
-const MAX_SPEED = 1.5;
+const MAX_SPEED = 0.5;
 const GROUND_LEVEL = 1;
 
 export const initial = {
