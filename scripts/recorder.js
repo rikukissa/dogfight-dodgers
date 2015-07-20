@@ -5,6 +5,8 @@ import identity from 'lodash.identity';
 import partialRight from 'lodash.partialright';
 import {replaceNotifier$} from './hotReplaceNotifier';
 
+const MAX_FRAMES = 1000;
+
 const sliderEl = document.getElementById('future-slider');
 const framesEl = document.getElementById('frames');
 
@@ -21,10 +23,7 @@ const paused$ = Bacon.fromEvent(window, 'keydown')
 
 paused$.filter(identity).onValue(() => sliderEl.focus());
 
-const allStates$ = recordedStates$.scan([], (states, value) => {
-  states.push(value)
-  return states;
-});
+const allStates$ = recordedStates$.scan([], (states, value) => states.concat(value).slice(-MAX_FRAMES));
 
 const updateRequest$ = Bacon.combineWith(identity, sliderChange$, replaceNotifier$);
 const isRunning$ = updateRequest$.map(false).toProperty().startWith(true).and(paused$.not());
