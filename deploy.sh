@@ -9,6 +9,7 @@ mkdir out;
 npm run build
 cp -r dist out/
 cp index.html out/
+cp -r assets out/
 
 # go to the out directory and create a *new* Git repo
 cd out

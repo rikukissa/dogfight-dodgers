@@ -66,3 +66,9 @@ canvas {
 .danger-zone .overlay {
   animation: danger 2s infinite;
 }
+#logo {
+  width: 350px;
+  position: fixed;
+  top: 1em;
+  right: 1em;
+}
