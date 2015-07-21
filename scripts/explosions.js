@@ -7,7 +7,7 @@ export const initial = {
   }
 };
 
-export function update({explosions, sounds}, [player, {bullets}, input]) {
+export function update({explosions, sounds}, [, {bullets}, input]) {
 
   return {
     explosions: explosions
@@ -20,5 +20,5 @@ export function update({explosions, sounds}, [player, {bullets}, input]) {
     sounds: {
       created: sounds.created.concat(bullets.filter(b => b.exploded))
     }
-  }
+  };
 }

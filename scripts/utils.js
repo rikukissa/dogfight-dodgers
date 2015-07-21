@@ -3,7 +3,7 @@ import radians from 'degrees-radians';
 
 export function randomGenerator(seed = 1) {
   return function() {
-    const x = Math.sin(seed++) * 10000;
+    const x = Math.sin(seed++) * 10000; // eslint-disable-line no-param-reassign
     return x - Math.floor(x);
   };
 }

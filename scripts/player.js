@@ -1,10 +1,8 @@
 import radians from 'degrees-radians';
-import {degrees} from './utils';
 import extend from 'deep-extend';
 import {GROUND_LEVEL} from './world';
 
 const MAX_SPEED = 0.5;
-
 
 export const initial = {
   position: {
@@ -51,7 +49,7 @@ export function update(player, input) {
 
   newPlayer.angle = mod(newPlayer.angle, 360);
 
-  newPlayer.thrust = Math.min(MAX_SPEED, newPlayer.thrust + newPlayer.throttle)
+  newPlayer.thrust = Math.min(MAX_SPEED, newPlayer.thrust + newPlayer.throttle);
 
   if(newPlayer.position.y <= GROUND_LEVEL) {
     newPlayer.position.y = GROUND_LEVEL;

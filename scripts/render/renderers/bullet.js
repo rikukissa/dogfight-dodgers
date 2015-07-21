@@ -11,8 +11,6 @@ const SPRITE = image(require('url!bullet.png'));
 const WIDTH = SPRITE.width;
 const HEIGHT = SPRITE.height;
 
-
-
 export function render(bullet) {
 
   const width = scale(bullet.dimensions.width);

@@ -9,7 +9,6 @@ function resize() {
 }
 
 window.addEventListener('resize', resize);
-resize()
+resize();
 
-
-module.exports = {canvas,ctx};
+module.exports = {canvas, ctx};

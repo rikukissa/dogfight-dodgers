@@ -34,14 +34,14 @@ function initialBullet(player) {
     angle: player.angle,
     ticksLived: 0,
     exploded: false
-  }
+  };
 }
 
 function updateBullet(bullet, delta) {
   const newBullet = extend({}, bullet);
 
-  newBullet.position.x += bullet.speed * Math.sin(radians(bullet.angle + 90)) * delta,
-  newBullet.position.y += bullet.speed * Math.cos(radians(bullet.angle + 90)) * delta
+  newBullet.position.x += bullet.speed * Math.sin(radians(bullet.angle + 90)) * delta;
+  newBullet.position.y += bullet.speed * Math.cos(radians(bullet.angle + 90)) * delta;
 
   if(newBullet.position.y <= GROUND_LEVEL) {
     newBullet.exploded = true;
@@ -53,11 +53,11 @@ function updateBullet(bullet, delta) {
 }
 
 export function update(bullets, [player, input]) {
-  const updatedBullets = bullets.bullets.reduce((bullets, bullet) => {
+  const updatedBullets = bullets.bullets.reduce((newBullets, bullet) => {
     if(bullet.ticksLived > 25 || bullet.exploded) {
-      return bullets;
+      return newBullets;
     }
-    return bullets.concat(updateBullet(bullet, input.delta));
+    return newBullets.concat(updateBullet(bullet, input.delta));
   }, []);
 
   return {
@@ -67,7 +67,7 @@ export function update(bullets, [player, input]) {
     sounds: {
       created: input.shoot.map(() => true)
     }
-  }
+  };
 }
 
 require('hotReplaceNotifier')();

@@ -1,1 +1,1 @@
-export const SCALE = 1/35;
+export const SCALE = 1 / 35;

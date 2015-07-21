@@ -85,7 +85,7 @@ function renderBackgroundLayer(layer, translation) {
 
   const bounces = Math.floor(scale(WIDTH) / spaceBetween);
 
-  const y = (y) => canvas.height - groundLevel - y;
+  const y = (val) => canvas.height - groundLevel - val;
 
   const translationOffset = -translation.x * parallax;
   const totalTranslation = translation.x + translationOffset;

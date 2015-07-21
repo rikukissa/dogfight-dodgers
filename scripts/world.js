@@ -12,17 +12,15 @@ export const initial = {
   }
 };
 
-export function update(world, [player, input]) {
+export function update(world, [player]) {
   const newWorld = extend({}, world);
 
-
   newWorld.dangerZone = player.position.x < 0 || player.position.x > WIDTH;
-
 
   newWorld.sounds = {
     dangerZone: false,
     endDangerZone: false
-  }
+  };
 
   if(!world.dangerZone && newWorld.dangerZone) {
     newWorld.sounds.dangerZone = true;

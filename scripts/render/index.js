@@ -1,4 +1,4 @@
-import {canvas, ctx} from 'render/canvas';
+import {ctx} from 'render/canvas';
 import {ALIVE_TIME} from 'explosions';
 import {memoizeArgs} from 'utils';
 import {gameToCanvas, cameraTranslation} from 'render/utils';

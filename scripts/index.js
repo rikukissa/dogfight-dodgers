@@ -21,15 +21,12 @@ import {
   UP_KEY,
   DOWN_KEY,
   LEFT_KEY,
-  LEFT_ARROW_KEY,
-  RIGHT_KEY,
-  RIGHT_ARROW_KEY
+  RIGHT_KEY
 } from './constants';
 
 // User events
-const keyDown$ = Bacon.fromEvent(window, 'keydown').map('.keyCode')
-const keyUp$ = Bacon.fromEvent(window, 'keyup').map('.keyCode')
-const mouseMove$ = Bacon.fromEvent(window, 'mousemove');
+const keyDown$ = Bacon.fromEvent(window, 'keydown').map('.keyCode');
+const keyUp$ = Bacon.fromEvent(window, 'keyup').map('.keyCode');
 
 const is = val => val2 => val === val2;
 
@@ -45,14 +42,14 @@ const delta$ = tick$.scan({
     return {
       time: Date.now(),
       delta: 1
-    }
+    };
   }
   const time = Date.now();
 
   return {
     time: time,
     delta: (time - memo.time) / WORLD_SPEED
-  }
+  };
 });
 
 function toKeyStream(keyCode) {
@@ -65,28 +62,29 @@ function toKeyStream(keyCode) {
 }
 
 const input$ = Bacon.zipWith(
-  ({delta, time}, up, down, left, right, shoot) => ({delta, time, shoot, keys: {up, down, left, right}}),
+  ({delta, time}, up, down, left, right, shoot) => // eslint-disable-line max-params
+    ({delta, time, shoot, keys: {up, down, left, right}}),
   delta$,
   toKeyStream(UP_KEY),
   toKeyStream(DOWN_KEY),
   toKeyStream(LEFT_KEY),
   toKeyStream(RIGHT_KEY),
   keyDown$.filter(is(SPACE_KEY)).bufferUntilValue(tick$)
-)
+);
 
-function createGameLoop(input$, initials) {
-  const updatedPlayer$ = input$.scan(initials.player, player.update).skip(1)
+function createGameLoop(inputs$, initials) {
+  const updatedPlayer$ = inputs$.scan(initials.player, player.update).skip(1);
 
-  const updatedBullets$ = Bacon.zipAsArray(updatedPlayer$, input$)
+  const updatedBullets$ = Bacon.zipAsArray(updatedPlayer$, inputs$)
   .scan(initials.bullets, bullets.update).skip(1);
 
-  const updatedWorld$ = Bacon.zipAsArray(updatedPlayer$, input$)
+  const updatedWorld$ = Bacon.zipAsArray(updatedPlayer$, inputs$)
   .scan(initials.world, world.update).skip(1);
 
   const updatedExplosions$ = Bacon.zipAsArray(
     updatedPlayer$,
     updatedBullets$,
-    input$
+    inputs$
   ).scan(initials.explosions, explosions.update).skip(1);
 
   const game$ = Bacon.zipWith(
@@ -95,7 +93,7 @@ function createGameLoop(input$, initials) {
     updatedBullets$,
     updatedWorld$,
     updatedExplosions$,
-    input$);
+    inputs$);
 
   return game$;
 }
@@ -118,7 +116,7 @@ gameState$.onValue(playSounds);
 
 Bacon
   .combineAsArray(futures$, selectedState$)
-  .onValues(renderFuture)
+  .onValues(renderFuture);
 
 Bacon.zipWith(toObject('state', 'input'), game$, input$).onValue(record);
 
