@@ -31,11 +31,12 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist/'),
     filename: 'bundle.js',
-    publicPath: 'dist/'
+    publicPath: '/dist/'
   },
   plugins: plugins,
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    modulesDirectories: ['./scripts', './node_modules', 'assets'],
+    extensions: ['', '.js', '.jsx', '.png']
   },
   module: {
     loaders: [{

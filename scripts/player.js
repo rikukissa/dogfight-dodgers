@@ -62,4 +62,4 @@ export function update(player, input) {
 
   return newPlayer;
 }
-require('./hotReplaceNotifier')();
+require('hotReplaceNotifier')();

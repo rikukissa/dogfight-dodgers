@@ -15,7 +15,6 @@ export const initial = {
 
 
 function initialBullet(player) {
-
   const sin = Math.sin(radians(player.angle));
   const cos = Math.cos(radians(player.angle));
 
@@ -71,4 +70,4 @@ export function update(bullets, [player, input]) {
   }
 }
 
-require('./hotReplaceNotifier')();
+require('hotReplaceNotifier')();

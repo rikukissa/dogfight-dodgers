@@ -35,4 +35,4 @@ export function update(world, [player, input]) {
   return newWorld;
 }
 
-require('./hotReplaceNotifier')();
+require('hotReplaceNotifier')();

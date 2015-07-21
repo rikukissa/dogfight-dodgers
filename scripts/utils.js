@@ -1,10 +1,11 @@
 import zipObject from 'lodash.zipobject';
+import radians from 'degrees-radians';
 
 export function randomGenerator(seed = 1) {
   return function() {
     const x = Math.sin(seed++) * 10000;
     return x - Math.floor(x);
-  }
+  };
 }
 
 export function random(randomFn, min, max) {
@@ -14,17 +15,11 @@ export function random(randomFn, min, max) {
 export function toObject(...keys) {
   return function(...values) {
     return zipObject(keys, values);
-  }
+  };
 }
 
 export function clamp(min, max, num) {
   return Math.min(Math.max(num, min), max);
-};
-
-export function image(src) {
-  const img = new Image();
-  img.src = src;
-  return img;
 }
 
 export function memoizeArgs(fn) {
@@ -35,13 +30,11 @@ export function memoizeArgs(fn) {
       fn(argument);
     }
     lastArgument = argument;
-  }
+  };
 }
 
-export function toRGB(arr) {
-  return `rgb(${arr.join(',')})`;
+export function degrees(rad) {
+  return rad / (Math.PI / 180);
 }
 
-export function degrees(radians) {
-  return radians / (Math.PI / 180);
-}
+export {radians as radians};

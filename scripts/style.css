@@ -67,7 +67,7 @@ canvas {
   animation: danger 2s infinite;
 }
 #logo {
-  width: 350px;
+  width: 35%;
   position: fixed;
   top: 1em;
   right: 1em;
