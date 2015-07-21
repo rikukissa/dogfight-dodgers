@@ -4,6 +4,9 @@ export const GROUND_LEVEL = 0;
 
 export const CRATE_WIDTH = 1;
 
+import {WORLD_SPEED} from 'constants';
+import {tick} from 'engine';
+
 export const initial = {
   crates: [
     {position: {x: 10, y: GROUND_LEVEL}},
@@ -17,7 +20,8 @@ export const initial = {
   sounds: {}
 };
 
-export function update(world) {
+export function update(world, input) {
+  tick(input.delta * WORLD_SPEED);
   return world;
 }
 
