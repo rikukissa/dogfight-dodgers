@@ -1,11 +1,14 @@
-import {scale, toRGB, rectPath} from 'render/utils';
+import {scale, toRGB, rectPath, image} from 'render/utils';
 import {randomGenerator, clamp} from 'utils';
 import {SCALE} from 'render/constants';
+import {GROUND_LEVEL} from 'constants';
 import {WIDTH, HEIGHT} from 'world';
 import {canvas, ctx} from 'render/canvas';
 
 export const SKY_COLOR = [168, 227, 233];
 export const SPACE_COLOR = [17, 103, 125];
+
+const GROUND = image(require('url!ground.png'));
 
 const layers = [
   {
@@ -64,7 +67,7 @@ function createGradient(translation) {
 }
 
 function renderBackgroundLayer(layer, translation) {
-  const groundLevel = scale(1.5);
+  const groundLevel = scale(GROUND_LEVEL);
 
   const nextOffset = 1;
 
@@ -133,9 +136,36 @@ function renderBackgroundLayer(layer, translation) {
   ctx.restore();
 }
 
-export function render(translation) {
-  const groundLevel = scale(1.5);
+function renderGround(translation) {
 
+  const width = GROUND.width / 2;
+  const ratio = width / GROUND.width;
+  const height = width * ratio;
+  const pieces = Math.ceil(canvas.width / width) + 1;
+
+  const y = canvas.height - scale(GROUND_LEVEL);
+  ctx.save();
+
+  ctx.strokeStyle = '#736c61';
+  ctx.fillStyle = '#7f786f';
+  ctx.lineWidth = 2;
+
+  rectPath(0, y, scale(WIDTH), scale(GROUND_LEVEL));
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.translate(-translation.x, 0);
+
+  for(let i = 0; i < pieces; i++) {
+    const x = width * i + (translation.x % width);
+    ctx.drawImage(GROUND, x, y, width, height);
+  }
+
+  ctx.restore();
+
+}
+
+export function render(translation) {
   ctx.fillStyle = createGradient(translation);
   ctx.fillRect(-translation.x, -translation.y, canvas.width, canvas.height);
 
@@ -144,14 +174,7 @@ export function render(translation) {
     renderBackgroundLayer(layer, translation);
   });
 
-  ctx.save();
-  ctx.strokeStyle = '#736c61';
-  ctx.fillStyle = '#7f786f';
-  ctx.lineWidth = 2;
 
-  rectPath(0, canvas.height - groundLevel, scale(WIDTH), groundLevel);
+  renderGround(translation);
 
-  ctx.fill();
-  ctx.stroke();
-  ctx.restore();
 }
