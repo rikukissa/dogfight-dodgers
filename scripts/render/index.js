@@ -5,6 +5,7 @@ import {gameToCanvas, cameraTranslation} from 'render/utils';
 import {render as renderPlayer} from 'render/renderers/plane';
 import {render as renderBackground} from 'render/renderers/background';
 import {render as renderBullet} from 'render/renderers/bullet';
+import {render as renderWorld} from 'render/renderers/world';
 
 import fps from 'fps';
 import 'style.css';
@@ -14,9 +15,6 @@ const ticker = fps({every: 10});
 const $fps = document.getElementById('fps');
 ticker.on('data', framerate => $fps.innerHTML = Math.round(framerate));
 
-function renderWorld() {
-
-}
 
 function renderExplosions({explosions}, currentTime) {
   ctx.save();

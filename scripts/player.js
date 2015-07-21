@@ -7,7 +7,7 @@ const MAX_SPEED = 0.5;
 export const initial = {
   position: {
     x: 3,
-    y: 1
+    y: GROUND_LEVEL
   },
   angle: 0,
   thrust: 0,
