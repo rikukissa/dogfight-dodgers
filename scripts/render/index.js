@@ -1,6 +1,5 @@
 import {ctx} from 'render/canvas';
 import {ALIVE_TIME} from 'explosions';
-import {memoizeArgs} from 'utils';
 import {gameToCanvas, cameraTranslation} from 'render/utils';
 
 import {render as renderPlayer} from 'render/renderers/plane';
@@ -15,12 +14,8 @@ const ticker = fps({every: 10});
 const $fps = document.getElementById('fps');
 ticker.on('data', framerate => $fps.innerHTML = Math.round(framerate));
 
-const toggleDangerZone = memoizeArgs(function(active) {
-  document.body.classList.toggle('danger-zone', active);
-});
+function renderWorld() {
 
-function renderWorld(world) {
-  toggleDangerZone(world.dangerZone);
 }
 
 function renderExplosions({explosions}, currentTime) {

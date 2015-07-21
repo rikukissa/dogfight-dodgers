@@ -169,12 +169,9 @@ export function render(translation) {
   ctx.fillStyle = createGradient(translation);
   ctx.fillRect(-translation.x, -translation.y, canvas.width, canvas.height);
 
-
   layers.forEach((layer) => {
     renderBackgroundLayer(layer, translation);
   });
 
-
   renderGround(translation);
-
 }
