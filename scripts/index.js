@@ -22,7 +22,7 @@ import {
   DOWN_KEY,
   LEFT_KEY,
   RIGHT_KEY
-} from './constants';
+} from 'constants';
 
 // User events
 const keyDown$ = Bacon.fromEvent(window, 'keydown').map('.keyCode');

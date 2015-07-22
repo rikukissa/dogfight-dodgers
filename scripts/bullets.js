@@ -4,7 +4,7 @@ import extend from 'deep-extend';
 const WIDTH = 0.75;
 const HEIGHT = 0.3;
 
-import {GROUND_LEVEL} from './world';
+import {GROUND_LEVEL} from 'world';
 
 export const initial = {
   bullets: [],

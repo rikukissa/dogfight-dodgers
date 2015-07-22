@@ -1,6 +1,6 @@
 import radians from 'degrees-radians';
 import extend from 'deep-extend';
-import {GROUND_LEVEL} from './world';
+import {GROUND_LEVEL} from 'world';
 
 const MAX_SPEED = 0.5;
 
@@ -40,16 +40,25 @@ export function update(player, input) {
   }
 
   if(input.keys.left) {
-    newPlayer.angle -= 4 * input.delta;
+
+    const tailY = newPlayer.position.y + 0.15 - (newPlayer.dimensions.height / 2) *
+      Math.sin(radians(newPlayer.angle - 180));
+
+    if(tailY > 0) {
+      newPlayer.angle -= 4 * input.delta;
+    }
   } else if(input.keys.right) {
     newPlayer.angle += 4 * input.delta;
   } else if(newPlayer.position.y > GROUND_LEVEL) {
     newPlayer.angle = stallPlane(newPlayer, input.delta);
   }
 
-  newPlayer.angle = mod(newPlayer.angle, 360);
 
   newPlayer.thrust = Math.min(MAX_SPEED, newPlayer.thrust + newPlayer.throttle);
+
+  newPlayer.thrust = Math.max(0,
+    newPlayer.thrust + 0.01 * Math.max(0, Math.sin(radians(newPlayer.angle))));
+
 
   if(newPlayer.position.y <= GROUND_LEVEL) {
     newPlayer.position.y = GROUND_LEVEL;
