@@ -1,6 +1,6 @@
 import Bacon from 'baconjs';
 import {render, renderFuture} from './render';
-import {playSounds} from './sounds';
+import {playSounds, muted$} from './sounds';
 import {toObject} from './utils';
 import identity from 'lodash.identity';
 
@@ -111,7 +111,7 @@ const futures$ = Bacon.zipWith((initialState, futureInput) => {
 const gameState$ = game$.merge(selectedState$);
 
 gameState$.onValue(render);
-gameState$.onValue(playSounds);
+gameState$.filter(muted$.not()).onValue(playSounds);
 
 Bacon
   .combineAsArray(futures$, selectedState$)
