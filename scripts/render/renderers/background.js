@@ -1,12 +1,13 @@
 import {scale, toRGB, rectPath, image} from 'render/utils';
 import {randomGenerator, clamp} from 'utils';
 import {SCALE} from 'render/constants';
-import {GROUND_LEVEL} from 'constants';
 import {WIDTH, HEIGHT} from 'world';
 import {canvas, ctx} from 'render/canvas';
 
 export const SKY_COLOR = [168, 227, 233];
 export const SPACE_COLOR = [17, 103, 125];
+
+const GROUND_LEVEL = 1.5;
 
 const GROUND = image(require('url!ground.png'));
 

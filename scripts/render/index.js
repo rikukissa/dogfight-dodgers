@@ -7,6 +7,8 @@ import {render as renderBackground} from 'render/renderers/background';
 import {render as renderBullet} from 'render/renderers/bullet';
 import {render as renderWorld} from 'render/renderers/world';
 
+const GROUND_LEVEL = -30;
+
 import fps from 'fps';
 import 'style.css';
 
@@ -42,9 +44,12 @@ export function render({player, bullets, world, explosions, input}) {
   ctx.translate(translation.x, translation.y);
 
   renderBackground(translation);
+
+  ctx.translate(0, GROUND_LEVEL);
+
+  renderWorld(world);
   renderPlayer(player);
   bullets.bullets.forEach(renderBullet);
-  renderWorld(world);
   renderExplosions(explosions, input.time);
 
   ctx.restore();
@@ -60,6 +65,8 @@ export function renderFuture(future, {player}) {
   ctx.translate(
     translation.x + future.player.position.x - player.position.x,
     translation.y);
+
+  ctx.translate(0, GROUND_LEVEL);
 
   renderPlayer(future.player);
   future.bullets.bullets.forEach(renderBullet);
