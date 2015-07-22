@@ -78,8 +78,7 @@ function createGameLoop(inputs$, initials) {
   const updatedBullets$ = Bacon.zipAsArray(updatedPlayer$, inputs$)
   .scan(initials.bullets, bullets.update).skip(1);
 
-  const updatedWorld$ = Bacon.zipAsArray(updatedPlayer$, inputs$)
-  .scan(initials.world, world.update).skip(1);
+  const updatedWorld$ = inputs$.scan(initials.world, world.update).skip(1);
 
   const updatedExplosions$ = Bacon.zipAsArray(
     updatedPlayer$,
