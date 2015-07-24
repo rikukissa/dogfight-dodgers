@@ -8,8 +8,15 @@ export function scale(num) {
 
 export function gameToCanvas({x, y}) {
   return {
-    x: x / SCALE,
-    y: canvas.height - y / SCALE
+    x: scale(x),
+    y: canvas.height - scale(y)
+  };
+}
+
+export function bodyToCanvas({position: [x, y]}) {
+  return {
+    x: scale(x),
+    y: canvas.height - scale(y)
   };
 }
 
@@ -23,7 +30,7 @@ export function rectPath(x, y, w, h) {
 }
 
 export function cameraTranslation(player) {
-  const playerOnCanvas = gameToCanvas(player.position);
+  const playerOnCanvas = bodyToCanvas(player.body);
 
   return {
     x: Math.max(-(scale(WIDTH) - canvas.width), Math.min(0, canvas.width / 2 - playerOnCanvas.x)),

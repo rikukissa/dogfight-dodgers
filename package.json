@@ -71,8 +71,6 @@
     "lodash.set": "^3.7.4",
     "lodash.some": "^3.2.3",
     "lodash.zipobject": "^3.0.0",
-    "matter-js": "^0.8.0",
-    "react": "^0.13.0",
-    "react-style": "^0.5.5"
+    "p2": "^0.7.0"
   }
 }

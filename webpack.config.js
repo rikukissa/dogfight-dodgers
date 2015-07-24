@@ -52,6 +52,9 @@ module.exports = {
     }, {
       test: /\.mp3$/,
       loaders: ['file']
+    }, {
+      test: /\.json$/,
+      loader: 'json'
     }
       // ,
       // {

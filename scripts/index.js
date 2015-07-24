@@ -1,18 +1,20 @@
+import {World} from 'p2';
 import Bacon from 'baconjs';
-import {render, renderFuture} from './render';
-import {playSounds} from './sounds';
-import {toObject} from './utils';
-import identity from 'lodash.identity';
+import {render} from 'render';
+import {contactMaterials} from 'materials';
+import {playSounds, muted$} from 'sounds';
+import {toObject} from 'utils';
 
 import 'bacon.animationframe';
 import './bufferUntilValue';
 
-import * as player from './player';
-import * as bullets from './bullets';
+import * as player from './plane';
+import * as bullets from './bullet';
+import * as crates from './crate';
 import * as world from './world';
-import * as explosions from './explosions';
+import * as explosions from './explosion';
 
-import {record, isRunning$, selectedState$, futureInput$} from './recorder';
+import {isRunning$} from './recorder';
 
 import {
   FRAME_RATE,
@@ -32,23 +34,20 @@ const is = val => val2 => val === val2;
 
 const tick$ = Bacon
   .scheduleAnimationFrame()
-  .bufferWithTime(FRAME_RATE);
+  .bufferWithTime(FRAME_RATE * 1000);
 
 const delta$ = tick$.scan({
   time: null,
   delta: 1
-}, (memo) => {
-  if(memo.time === null) {
-    return {
-      time: Date.now(),
-      delta: 1
-    };
-  }
-  const time = Date.now();
+}, (memo, stamps) => {
+  const current = stamps[stamps.length - 1] / 1000;
+  memo.current = memo.current || current;
+  const difference = current - memo.current;
 
   return {
-    time: time,
-    delta: (time - memo.time) / WORLD_SPEED
+    current,
+    difference,
+    delta: difference / WORLD_SPEED
   };
 });
 
@@ -62,8 +61,8 @@ function toKeyStream(keyCode) {
 }
 
 const input$ = Bacon.zipWith(
-  ({delta, time}, up, down, left, right, shoot) => // eslint-disable-line max-params
-    ({delta, time, shoot, keys: {up, down, left, right}}),
+  (time, up, down, left, right, shoot) => // eslint-disable-line max-params
+    ({time, shoot, keys: {up, down, left, right}}),
   delta$,
   toKeyStream(UP_KEY),
   toKeyStream(DOWN_KEY),
@@ -72,13 +71,21 @@ const input$ = Bacon.zipWith(
   keyDown$.filter(is(SPACE_KEY)).bufferUntilValue(tick$)
 );
 
-function createGameLoop(inputs$, initials) {
-  const updatedPlayer$ = inputs$.scan(initials.player, player.update).skip(1);
+function createGameLoop(inputs$, engine, initials) {
 
-  const updatedBullets$ = Bacon.zipAsArray(updatedPlayer$, inputs$)
-  .scan(initials.bullets, bullets.update).skip(1);
+  const updatedWorld$ = Bacon.zipAsArray(
+    inputs$,
+    inputs$.map(engine)
+  ).map(world.update);
 
-  const updatedWorld$ = inputs$.scan(initials.world, world.update).skip(1);
+  const updatedPlayer$ = Bacon.zipAsArray(input$, updatedWorld$)
+    .scan(initials.player, player.update).skip(1);
+
+  const updatedBullets$ = Bacon.zipAsArray(inputs$, updatedWorld$, updatedPlayer$)
+    .scan(initials.bullets, bullets.update).skip(1);
+
+  const updatedCrates$ = Bacon.zipAsArray(inputs$, updatedWorld$)
+    .scan(initials.crates, crates.update).skip(1);
 
   const updatedExplosions$ = Bacon.zipAsArray(
     updatedPlayer$,
@@ -87,36 +94,31 @@ function createGameLoop(inputs$, initials) {
   ).scan(initials.explosions, explosions.update).skip(1);
 
   const game$ = Bacon.zipWith(
-    toObject('player', 'bullets', 'world', 'explosions', 'input'),
+    toObject('player', 'bullets', 'world', 'explosions', 'crates', 'input'),
     updatedPlayer$,
     updatedBullets$,
     updatedWorld$,
     updatedExplosions$,
+    updatedCrates$,
     inputs$);
 
   return game$;
 }
 
-const game$ = createGameLoop(input$.filter(isRunning$), {
-  player: player.initial,
-  bullets: bullets.initial,
-  explosions: explosions.initial,
-  world: world.initial
+const engine = new World({
+  gravity: [0, -9.82]
 });
 
-const futures$ = Bacon.zipWith((initialState, futureInput) => {
-  return createGameLoop(Bacon.fromArray(futureInput), initialState);
-}, selectedState$, futureInput$).flatMap(identity);
+contactMaterials.forEach(material => engine.addContactMaterial(material));
 
-const gameState$ = game$.merge(selectedState$);
+const gameState$ = createGameLoop(input$.filter(isRunning$), engine, {
+  player: player.initial(engine),
+  bullets: bullets.initial(engine),
+  explosions: explosions.initial(engine),
+  world: world.initial(engine),
+  crates: crates.initial(engine)
+});
 
 gameState$.onValue(render);
 gameState$.onValue(playSounds);
-
-Bacon
-  .combineAsArray(futures$, selectedState$)
-  .onValues(renderFuture);
-
-Bacon.zipWith(toObject('state', 'input'), game$, input$).onValue(record);
-
 
