@@ -120,5 +120,5 @@ const gameState$ = createGameLoop(input$.filter(isRunning$), engine, {
 });
 
 gameState$.onValue(render);
-gameState$.onValue(playSounds);
+gameState$.filter(muted$.not()).onValue(playSounds);
 

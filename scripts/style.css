@@ -10,6 +10,12 @@ canvas {
   display: block;
 }
 
+.mute {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+}
+
 /*
  * Development tools
  */
