@@ -9,7 +9,7 @@ export function initial() {
   };
 }
 
-export function update({explosions, sounds}, [, bullets, input]) {
+export function update({explosions, sounds}, input, bullets) {
 
   const newExplosions = bullets.explosions
     .map(({body: {position: [x, y]}}) => ({

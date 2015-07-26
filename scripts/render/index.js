@@ -38,4 +38,4 @@ export function render({player, bullets, crates}) {
   ticker.tick();
 }
 
-require('hotReplaceNotifier')();
+

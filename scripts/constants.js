@@ -1,4 +1,4 @@
-export const FRAME_RATE = 1 / 60;
+export const FRAME_RATE = 60;
 export const WORLD_SPEED = 1 / 30;
 export const MAX_SUBSTEPS = 10;
 export const PAUSE_KEY = 80;

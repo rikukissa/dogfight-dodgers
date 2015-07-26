@@ -14,8 +14,12 @@ export const muted$ = Bacon.fromEvent($mute, 'change')
   })
   .toProperty($mute.checked);
 
-export function playSounds({bullets}) {
-  bullets.sounds.created.forEach(() => shootSound.play());
-}
+const soundBus$ = new Bacon.Bus();
 
-require('hotReplaceNotifier')();
+soundBus$.filter(muted$.not()).onValue(({bullets}) => {
+  bullets.sounds.created.forEach(() => shootSound.play());
+});
+
+export const playSounds = ::soundBus$.push;
+
+

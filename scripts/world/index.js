@@ -13,12 +13,10 @@ export function initial(world) {
   body.addShape(shape);
   world.addBody(body);
 
-  return {
-    sounds: {}
-  };
+  return world;
 }
 
-export function update([input, world]) {
+export function update(world, input) {
   world.step(WORLD_SPEED, input.time.delta * WORLD_SPEED, MAX_SUBSTEPS);
 
   const {emitImpactEvent, narrowphase} = world;
@@ -33,4 +31,4 @@ export function update([input, world]) {
   return world;
 }
 
-require('hotReplaceNotifier')();
+

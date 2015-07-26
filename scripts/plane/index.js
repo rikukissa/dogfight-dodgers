@@ -14,7 +14,7 @@ export function initial(world) {
   const body = new p2.Body({
     mass: 0,
     angle: 0,
-    position: [3, GROUND_LEVEL + HEIGHT/2]
+    position: [3, GROUND_LEVEL + HEIGHT / 2]
   });
 
   world.addBody(body);
@@ -29,8 +29,8 @@ export function initial(world) {
     thrust: 0,
     throttle: 0,
     healt: 1
-  }
-};
+  };
+}
 
 function mod(num, from) {
   return (num % from + from) % from;
@@ -42,7 +42,7 @@ function stallPlane(player, delta) {
   return player.body.angle + distance * (STALL_ROTATION - STALL_ROTATION * player.healt) * delta;
 }
 
-export function update(player, [input]) {
+export function update(player, input) {
 
   if(input.keys.up) {
     player.throttle += 0.001 * input.time.delta;
@@ -53,7 +53,7 @@ export function update(player, [input]) {
   if(input.keys.left) {
 
     const tailY = player.body.position[1] + 0.15 - (HEIGHT / 2) *
-      Math.sin(player.body.angle - RADIAN/2);
+      Math.sin(player.body.angle - RADIAN / 2);
 
     if(tailY > 0) {
       player.body.angle -= KEY_ROTATION * input.time.delta;
@@ -78,4 +78,4 @@ export function update(player, [input]) {
 
   return player;
 }
-require('hotReplaceNotifier')();
+

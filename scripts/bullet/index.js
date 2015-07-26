@@ -5,7 +5,7 @@ export const HEIGHT = 0.3;
 export const ALIVE_TIME = 25;
 const RADIAN = 6.283185307179586;
 
-export function initial(world) {
+export function initial() {
   return {
     bullets: [],
     explosions: [],
@@ -13,8 +13,7 @@ export function initial(world) {
       created: []
     }
   };
-};
-
+}
 
 function initialBullet(player) {
   const sin = Math.sin(player.body.angle);
@@ -69,7 +68,7 @@ function create(player, world) {
   return bullet;
 }
 
-export function update(bullets, [input, world, player]) {
+export function update(bullets, input, world, player) {
 
   const updatedBullets = bullets.bullets.map((bullet) => {
     return updateBullet(bullet, world, input.time.delta);
@@ -84,8 +83,7 @@ export function update(bullets, [input, world, player]) {
   });
 
   return {
-    bullets: newBullets.filter(b => !b.exploded)
-      .concat(input.shoot.map(() => create(player, world))),
+    bullets: newBullets.filter(b => !b.exploded).concat(input.shoot.map(() => create(player, world))),
     explosions: updatedBullets.filter((bullet) => bullet.exploded),
     sounds: {
       created: input.shoot.map(() => true)
@@ -93,4 +91,4 @@ export function update(bullets, [input, world, player]) {
   };
 }
 
-require('hotReplaceNotifier')();
+

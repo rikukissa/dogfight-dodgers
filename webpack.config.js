@@ -42,7 +42,7 @@ module.exports = {
     loaders: [{
       test: /\.js$/,
       exclude: /node_modules/,
-      loaders: ['monkey-hot', 'babel']
+      loaders: ['monkey-hot', 'babel?stage=0']
     }, {
       test: /\.css$/,
       loaders: ['style', 'css']

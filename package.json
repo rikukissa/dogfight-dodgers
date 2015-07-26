@@ -31,7 +31,7 @@
   "homepage": "https://github.com/rikukissa/react-webpack-template",
   "devDependencies": {
     "babel-core": "^4.7.4",
-    "babel-loader": "^4.1.0",
+    "babel-loader": "^5.3.2",
     "crop-loader": "0.0.1",
     "css-loader": "^0.9.1",
     "file-loader": "^0.8.4",
@@ -54,6 +54,7 @@
     "webpack-notifier": "^1.2.1"
   },
   "dependencies": {
+    "animation-frame": "^0.2.4",
     "bacon": "0.0.1",
     "bacon.animationframe": "^0.2.1",
     "baconjs": "^0.7.65",
