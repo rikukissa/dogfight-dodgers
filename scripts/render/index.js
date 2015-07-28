@@ -1,7 +1,7 @@
 import {ctx} from 'render/canvas';
 import {cameraTranslation} from 'render/utils';
 
-import {render as renderPlayer} from 'plane/render';
+import {render as renderPlane} from 'plane/render';
 import {render as renderBackground} from 'background/render';
 import {render as renderBullet} from 'bullet/render';
 import {render as renderCrate} from 'crate/render';
@@ -19,7 +19,7 @@ ticker.on('data', framerate =>
   $fps.innerHTML = Math.round(framerate)
 );
 
-export function render({player, bullets, crates}) {
+export function render({player, bullets, crates, planes}) {
   ctx.save();
 
   const translation = cameraTranslation(player);
@@ -29,10 +29,14 @@ export function render({player, bullets, crates}) {
 
   ctx.translate(0, GROUND_LEVEL);
 
-  renderPlayer(player);
+  renderPlane(player);
 
   bullets.bullets.forEach(renderBullet);
   crates.crates.forEach(renderCrate);
+
+  for(let id in planes) {
+    renderPlane(planes[id]);
+  }
 
   ctx.restore();
   ticker.tick();

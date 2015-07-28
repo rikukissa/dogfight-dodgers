@@ -1,9 +1,9 @@
 import p2 from 'p2';
 import {WIDTH as PLANE_WIDTH, HEIGHT as PLANE_HEIGHT} from 'plane';
+import {RADIAN} from 'constants';
 export const WIDTH = 0.75;
 export const HEIGHT = 0.3;
 export const ALIVE_TIME = 25;
-const RADIAN = 6.283185307179586;
 
 export function initial() {
   return {

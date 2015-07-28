@@ -7,4 +7,4 @@ export const LEFT_KEY = 65;
 export const UP_KEY = 87;
 export const RIGHT_KEY = 68;
 export const DOWN_KEY = 83;
-
+export const RADIAN = Math.PI * 2;

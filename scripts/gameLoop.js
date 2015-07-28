@@ -1,6 +1,7 @@
 import Bacon from 'baconjs';
 import extend from 'extend';
 import AnimationFrame from 'animation-frame';
+import network from 'network';
 
 import {
   FRAME_RATE,
@@ -30,7 +31,6 @@ const initial = {
 const keyDown$ = Bacon.fromEvent(window, 'keydown')
   .map('.keyCode').filter(c => keys.hasOwnProperty(c));
 
-
 const keyUp$ = Bacon.fromEvent(window, 'keyup')
   .map('.keyCode').filter(c => keys.hasOwnProperty(c));
 
@@ -46,8 +46,13 @@ Bacon.fromEvent(window, 'keydown')
 
 const input = {
   keys: initial,
-  shoot: []
+  shoot: [],
+  planes: {}
 };
+
+network.on('update', (msg) => {
+  input.planes[msg.id] = msg;
+});
 
 keysDown$.onValue(value => input.keys = value);
 
@@ -81,6 +86,7 @@ export default function gameLoop(fn) {
     const frameInput = extend({}, input, {time: delta});
 
     input.shoot = [];
+    input.planes = {};
 
     return fn(frameInput);
   }
