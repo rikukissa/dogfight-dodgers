@@ -24,7 +24,7 @@ export function initial(world) {
 export function update(player, input) {
 
   if(input.keys.up) {
-    player.throttle += 0.001 * input.time.delta;
+    player.throttle += 0.001 * input.delta;
   } else {
     player.throttle = 0;
   }
@@ -35,12 +35,12 @@ export function update(player, input) {
       Math.sin(player.body.angle - RADIAN / 2);
 
     if(tailY > 0) {
-      player.body.angle -= KEY_ROTATION * input.time.delta;
+      player.body.angle -= KEY_ROTATION * input.delta;
     }
   } else if(input.keys.right) {
-    player.body.angle += KEY_ROTATION * input.time.delta;
+    player.body.angle += KEY_ROTATION * input.delta;
   } else if(player.body.position[1] > GROUND_LEVEL) {
-    player.body.angle = stallPlane(player, input.time.delta);
+    player.body.angle = stallPlane(player, input.delta);
   }
 
   player.thrust = Math.min(MAX_SPEED, player.thrust + player.throttle);
@@ -52,10 +52,10 @@ export function update(player, input) {
   }
 
   player.body.position[0] += player.thrust * Math.sin(player.body.angle + RADIAN * 0.25)
-    * input.time.delta;
+    * input.delta;
 
   player.body.position[1] += player.thrust * Math.cos(player.body.angle + RADIAN * 0.25)
-    * input.time.delta;
+    * input.delta;
 
   return player;
 }

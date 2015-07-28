@@ -37,4 +37,8 @@ export function degrees(rad) {
   return rad / (Math.PI / 180);
 }
 
+export function createId() {
+  return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+}
+
 export {radians as radians};

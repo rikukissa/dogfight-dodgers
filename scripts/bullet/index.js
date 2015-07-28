@@ -71,7 +71,7 @@ function create(player, world) {
 export function update(bullets, input, world, player) {
 
   const updatedBullets = bullets.bullets.map((bullet) => {
-    return updateBullet(bullet, world, input.time.delta);
+    return updateBullet(bullet, world, input.delta);
   });
 
   const newBullets = updatedBullets.filter((bullet) => {

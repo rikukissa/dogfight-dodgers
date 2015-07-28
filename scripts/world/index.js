@@ -17,7 +17,7 @@ export function initial(world) {
 }
 
 export function update(world, input) {
-  world.step(WORLD_SPEED, input.time.delta * WORLD_SPEED, MAX_SUBSTEPS);
+  world.step(WORLD_SPEED, input.delta * WORLD_SPEED, MAX_SUBSTEPS);
 
   const {emitImpactEvent, narrowphase} = world;
 
