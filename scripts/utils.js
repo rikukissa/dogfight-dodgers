@@ -37,8 +37,18 @@ export function degrees(rad) {
   return rad / (Math.PI / 180);
 }
 
-export function createId() {
-  return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+export function getId() {
+  const storedId = window.localStorage.getItem('playerId');
+
+  if(storedId) {
+    return storedId;
+  }
+
+  const id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
+  window.localStorage.setItem('playerId', id);
+
+  return id;
 }
 
 export {radians as radians};

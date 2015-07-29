@@ -1,11 +1,14 @@
-var server = require('http').createServer();
-var io = require('socket.io')(server);
-var p2p = require('socket.io-p2p-server').Server;
-io.use(p2p);
+const server = require('http').createServer();
+const io = require('socket.io')(server);
 
 io.on('connection', function(socket) {
   socket.on('update', function(data) {
     socket.broadcast.emit('update', data);
+  });
+
+  socket.on('join', function(request) {
+    socket.join(request.room);
+    socket.broadcast.to(request.room).emit('join', request.id);
   });
 });
 server.listen(3030);

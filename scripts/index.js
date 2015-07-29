@@ -46,7 +46,6 @@ gameLoop(function(delta) {
   inputState.planes = networkState.planes;
 
   input.flush();
-  network.flush();
 
   const world = updateWorld(state.world, inputState);
   const player = updatePlayer(state.player, inputState);

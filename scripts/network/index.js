@@ -1,33 +1,38 @@
-const P2P = require('socket.io-p2p');
 import throttle from 'lodash.throttle';
-const io = require('socket.io-client');
-const socket = io.connect('http://localhost:3030');
-import {createId} from 'utils';
-const p2p = new P2P(socket, {});
+import io from 'socket.io-client';
+import {getId} from 'utils';
 
-const id = createId();
+const socket = io.connect('http://localhost:3030');
+
+const id = getId();
+
+const ROOM_ID = 'fooba';
 
 function getInitialState() {
   return {
-    planes: {}
+    planes: {},
+    players: {}
   };
 }
 
 let state = getInitialState();
 
-p2p.on('update', (data) => {
+socket.emit('join', {room: ROOM_ID, id});
+
+socket.on('join', (playerId) => {
+  // Pelaajalistan synccaus
+});
+
+
+socket.on('update', (data) => {
   state.planes[data.id] = data;
 });
 
 export const update = throttle(function update(data) {
   data.id = id;
-  p2p.emit('update', data);
+  socket.emit('update', data);
 }, 10);
 
 export function getState() {
   return state;
-}
-
-export function flush() {
-  state = getInitialState();
 }
