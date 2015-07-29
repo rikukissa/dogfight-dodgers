@@ -3,10 +3,7 @@ import {render} from 'render';
 import {contactMaterials} from 'materials';
 import {playSounds} from 'sounds';
 import gameLoop from 'gameLoop';
-import extend from 'extend';
-import omit from 'lodash.omit';
 import * as input from 'input';
-import * as network from 'network';
 
 import {initial as initialWorld, update as updateWorld} from './world';
 import {initial as initialPlayer, update as updatePlayer} from './player';
@@ -15,11 +12,19 @@ import {initial as initialBullets, update as updateBullets} from './bullet';
 import {initial as initialCrates, update as updateCrates} from './crate';
 import {initial as initialExplosions, update as updateExplosions} from './explosion';
 
+/*
+ * Physics world initialization
+ */
+
 const engine = new World({
   gravity: [0, -9.82]
 });
 
 contactMaterials.forEach(material => engine.addContactMaterial(material));
+
+/*
+ * Game state & game loop
+ */
 
 let state = {
   world: initialWorld(engine),
@@ -30,21 +35,11 @@ let state = {
   planes: initialPlanes(engine)
 };
 
-
-function sendUpdate(st) {
-  const body = omit(st.player.body, ['world', 'shapes']);
-  const playerData = extend({}, st.player, {body});
-  network.update(playerData);
-}
-
 gameLoop(function(delta) {
 
   const inputState = input.getState();
-  const networkState = network.getState();
 
   inputState.delta = delta.delta;
-  inputState.planes = networkState.planes;
-
   input.flush();
 
   const world = updateWorld(state.world, inputState);
@@ -66,6 +61,5 @@ gameLoop(function(delta) {
   render(state);
   playSounds(state);
 
-  sendUpdate(state);
 });
 

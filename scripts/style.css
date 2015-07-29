@@ -20,37 +20,16 @@ canvas {
  * Development tools
  */
 
-#controls {
+#debug {
   box-sizing: border-box;
   padding: 0 1em;
-  width: 200px;
-  height: 100px;
   position: absolute;
   top: 0;
   left: 0;
   background: rgba(255, 255, 255, 0.5);
-}
-
-#frames:before {
-  content: 'total frames: ';
+  padding: 1em;
 }
 
 #fps:before {
   content: 'fps: ';
 }
-
-#future-slider {
-  width: 100%;
-}
-
-.future-slider {
-  margin-top: 1em;
-}
-
-#logo {
-  width: 35%;
-  position: fixed;
-  top: 1em;
-  right: 1em;
-}
-
