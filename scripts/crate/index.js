@@ -1,12 +1,11 @@
 import {Body, Box} from 'p2';
-
-export const CRATE_SIZE = 1;
 import {crate as material} from 'materials';
+import range from 'lodash.range';
 import plane from 'plane';
 
 const TYPE = {};
 export {TYPE as default};
-
+export const CRATE_SIZE = 1;
 export function initial(world) {
 
   function box(x, y) {
@@ -38,9 +37,9 @@ export function initial(world) {
     };
   }
 
-  const crates = [
-    create(20, CRATE_SIZE / 2 + 1)
-  ];
+  const crates = range(60).map((i) => {
+    return create(20 + i % 12 * 2, CRATE_SIZE / 2 + 5 + Math.floor(i / 12) * 2)
+  })
 
   return {
     crates,
