@@ -38,7 +38,7 @@ function initialBullet(player) {
 
   return {
     body: body,
-    thrust: player.thrust + 0.4,
+    thrust: player.thrust + 1,
     ticksLived: 0,
     exploded: false
   };
