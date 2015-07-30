@@ -192,27 +192,44 @@ function renderClouds(translation, elapsedTime) {
   const maxX = SCALED_WORLD_WIDTH;
 
   for(let i = 0; i < WIDTH / 10; i++) {
-    ctx.save();
-
-    ctx.scale(0.75, 0.75);
-
     const movement = elapsedTime * random();
     const sprite = CLOUDS[Math.floor(random() * CLOUDS.length)];
-    const width = sprite.width;
 
-    const offsetRight = width * 2 + width / 2;
-    const offsetLeft = -width * 2;
+    const depth = clamp(0.2, 1, random());
 
-    const x = mod((random() * maxX - movement), maxX + offsetRight);
+    const width = sprite.width * depth;
+    const height = sprite.height * depth;
+
+    const offsetRight = width;
+    const offsetLeft = -width;
+
+    const x = mod((random() * maxX - movement), maxX + offsetRight) + offsetLeft;
     const y = base - random() * (SCALED_WORLD_HEIGHT / 2);
 
-    ctx.translate(-translation.x + x + offsetLeft, y);
+    const canvasX = x + translation.x * depth;
+    const canvasY = y + translation.y * depth;
 
-    ctx.drawImage(sprite, sprite.width, sprite.height);
+    if(canvasX > canvas.width || canvasX < -width ||
+      canvasY > canvas.height || canvasY < -height) {
+      continue;
+    }
+
+    ctx.save();
+    ctx.translate(
+      -(translation.x - translation.x * depth) + x,
+      -(translation.y - translation.y * depth) + y
+    );
+
+    ctx.drawImage(sprite,
+      0, 0,
+      sprite.width, sprite.height,
+      0, 0, width, height
+    );
+
+    // ctx.strokeRect(0, 0, sprite.width * 0.75, sprite.height * 0.75);
 
     ctx.restore();
   }
-
 }
 
 export function render(translation, elapsedTime) {
