@@ -43,10 +43,10 @@ gameLoop(function(delta) {
   input.flush();
 
   const world = updateWorld(state.world, inputState);
-  const player = updatePlayer(state.player, inputState);
+  const player = updatePlayer(state.player, inputState, world);
   const planes = updatePlanes(state.planes, inputState, world);
   const bullets = updateBullets(state.bullets, inputState, world, player);
-  const crates = updateCrates(state.crates, inputState);
+  const crates = updateCrates(state.crates, inputState, world);
   const explosions = updateExplosions(state.explosions, inputState, bullets);
 
   state = {

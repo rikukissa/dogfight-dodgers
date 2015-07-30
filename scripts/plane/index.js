@@ -1,6 +1,9 @@
 import p2 from 'p2';
 import {GROUND_LEVEL} from 'world';
 
+const TYPE = {};
+export {TYPE as default};
+
 export const WIDTH = 1.6;
 export const HEIGHT = 1;
 
@@ -18,6 +21,7 @@ export function create(opts, world) {
     position: [3, GROUND_LEVEL + HEIGHT / 2]
   });
 
+  body.TYPE = TYPE;
   world.addBody(body);
 
   body.addShape(new p2.Box({
@@ -29,7 +33,8 @@ export function create(opts, world) {
     body: body,
     thrust: 0,
     throttle: 0,
-    healt: 1
+    healt: 1,
+    bullets: 20
   };
 
   if(!opts) {

@@ -24,8 +24,18 @@ export function update(world, input) {
   if(!emitImpactEvent) {
     world.impacts = [];
   } else {
-    world.impacts = narrowphase.contactEquations
-      .filter(eq => eq.firstImpact);
+    const firstImpacts = narrowphase.contactEquations
+      .filter(({firstImpact, bodyA, bodyB}) => firstImpact && bodyA.world && bodyB.world);
+
+    world.impacts = firstImpacts.filter(function uniquePair({bodyA, bodyB}, index) {
+      for(let i = 0; i < index; i++) {
+        if(firstImpacts[i].bodyA === bodyA && firstImpacts[i].bodyB === bodyB ||
+          firstImpacts[i].bodyB === bodyA && firstImpacts[i].bodyA === bodyB) {
+          return false;
+        }
+      }
+      return true;
+    });
   }
 
   return world;

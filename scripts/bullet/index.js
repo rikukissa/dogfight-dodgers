@@ -57,8 +57,6 @@ function updateBullet(bullet, world, delta) {
     }
   }
 
-  // bullet.body.angle = -bullet.body.angularVelocity;
-
   return bullet;
 }
 
@@ -72,9 +70,7 @@ export function update(bullets, input, world, player) {
 
   const updatedBullets = bullets.bullets.map((bullet) => {
     return updateBullet(bullet, world, input.delta);
-  });
-
-  const newBullets = updatedBullets.filter((bullet) => {
+  }).filter((bullet) => {
     if(bullet.ticksLived > ALIVE_TIME || bullet.exploded) {
       world.removeBody(bullet.body);
       return false;
@@ -82,8 +78,10 @@ export function update(bullets, input, world, player) {
     return true;
   });
 
+  const newBullets = player.createdBullets.map(() => create(player, world));
+
   return {
-    bullets: newBullets.filter(b => !b.exploded).concat(input.shoot.map(() => create(player, world))),
+    bullets: updatedBullets.filter(b => !b.exploded).concat(newBullets),
     explosions: updatedBullets.filter((bullet) => bullet.exploded),
     sounds: {
       created: input.shoot.map(() => true)

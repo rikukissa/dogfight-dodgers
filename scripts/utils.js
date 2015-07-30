@@ -51,4 +51,17 @@ export function getId() {
   return id;
 }
 
+export function createCollisionDispatcher(collisionHandlers) {
+  return function handleCollisions(world) {
+    for(let {bodyA, bodyB} of world.impacts) {
+      if(this.body === bodyA || this.body === bodyB) {
+        const other = this.body === bodyA ? bodyB : bodyA;
+        const handler = collisionHandlers.get(other.TYPE);
+        return handler(this);
+      }
+    }
+    return this;
+  };
+}
+
 export {radians as radians};

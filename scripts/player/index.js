@@ -1,12 +1,24 @@
 import {GROUND_LEVEL} from 'world';
 import {RADIAN} from 'constants';
 import {create} from 'plane';
+import crate from 'crate';
+import extend from 'extend';
+import {createCollisionDispatcher} from 'utils';
 
 const MAX_SPEED = 0.7;
 const KEY_ROTATION = 0.05;
 
+const collisionHandlers = new Map();
+
+collisionHandlers.set(crate, function(player) {
+  player.bullets += 20;
+  return player;
+});
+
 export function initial(world) {
-  return create(null, world);
+  return extend(create(null, world), {
+    createdBullets: []
+  });
 }
 
 function rotatePlane(player, degrees) {
@@ -24,7 +36,15 @@ function rotatePlane(player, degrees) {
   return degrees;
 }
 
-export function update(player, input) {
+function createNewBullets(input) {
+  this.createdBullets = input.shoot.slice(0, this.bullets).map(() => true);
+  this.bullets -= this.createdBullets.length;
+  return this;
+}
+
+const handleCollisions = createCollisionDispatcher(collisionHandlers);
+
+export function update(player, input, world) {
 
   if(input.keys.down) {
     player.body.angle += rotatePlane(player, -KEY_ROTATION) * input.delta;
@@ -54,6 +74,8 @@ export function update(player, input) {
   player.body.position[1] += player.thrust * Math.cos(player.body.angle + RADIAN * 0.25)
     * input.delta;
 
-  return player;
+  return player
+    ::handleCollisions(world)
+    ::createNewBullets(input);
 }
 
