@@ -28,10 +28,6 @@ function initialBullet(player) {
     position: [
       player.body.position[0] + (PLANE_WIDTH / 2 + (WIDTH)) * cos + yOffset * sin,
       player.body.position[1] - (PLANE_WIDTH / 2 + (WIDTH)) * sin + yOffset * cos
-    ],
-    velocity: [
-      (30 + player.body.velocity[0]) * Math.sin(player.body.angle + RADIAN * 0.25),
-      (30 + player.body.velocity[1]) * Math.cos(player.body.angle + RADIAN * 0.25)
     ]
   });
 
@@ -42,6 +38,7 @@ function initialBullet(player) {
 
   return {
     body: body,
+    thrust: player.thrust + 0.4,
     ticksLived: 0,
     exploded: false
   };
@@ -50,12 +47,16 @@ function initialBullet(player) {
 function updateBullet(bullet, world, delta) {
   bullet.ticksLived += delta;
 
+
   for(let {bodyA, bodyB} of world.impacts) {
     if(bullet.body === bodyA || bullet.body === bodyB) {
       bullet.exploded = true;
       return bullet;
     }
   }
+
+  bullet.body.position[0] += bullet.thrust * Math.sin(bullet.body.angle + RADIAN * 0.25) * delta;
+  bullet.body.position[1] += bullet.thrust * Math.cos(bullet.body.angle + RADIAN * 0.25) * delta;
 
   return bullet;
 }
