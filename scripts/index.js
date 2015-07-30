@@ -32,14 +32,15 @@ let state = {
   bullets: initialBullets(engine),
   crates: initialCrates(engine),
   explosions: initialExplosions(engine),
-  planes: initialPlanes(engine)
+  planes: initialPlanes(engine),
+  elapsedTime: 0
 };
 
-gameLoop(function(delta) {
+gameLoop(function({delta}) {
 
   const inputState = input.getState();
 
-  inputState.delta = delta.delta;
+  inputState.delta = delta;
   input.flush();
 
   const world = updateWorld(state.world, inputState);
@@ -55,7 +56,8 @@ gameLoop(function(delta) {
     planes,
     bullets,
     crates,
-    explosions
+    explosions,
+    elapsedTime: state.elapsedTime + delta
   };
 
   render(state);

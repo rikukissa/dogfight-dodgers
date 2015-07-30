@@ -8,10 +8,10 @@ import {ctx} from 'render/canvas';
 import {WIDTH, HEIGHT} from 'plane';
 const SPRITE = image(require('url!plane.png'));
 
-export function render(plane) {
+const width = scale(WIDTH);
+const height = scale(HEIGHT);
 
-  const width = scale(WIDTH);
-  const height = scale(HEIGHT);
+export function render(plane) {
 
   const canvasCoordinates = bodyToCanvas(plane.body);
 

@@ -12,8 +12,8 @@ canvas {
 
 .mute {
   position: fixed;
-  bottom: 1em;
   right: 1em;
+  top: 1em;
 }
 
 /*
@@ -32,4 +32,11 @@ canvas {
 
 #fps:before {
   content: 'fps: ';
+}
+
+.frame {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
 }

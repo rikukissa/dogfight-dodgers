@@ -1,5 +1,5 @@
 import {scale, toRGB, rectPath, image} from 'render/utils';
-import {randomGenerator, clamp} from 'utils';
+import {randomGenerator, clamp, mod} from 'utils';
 import {SCALE} from 'render/constants';
 import {WIDTH, HEIGHT} from 'world';
 import {canvas, ctx} from 'render/canvas';
@@ -8,8 +8,20 @@ export const SKY_COLOR = [168, 227, 233];
 export const SPACE_COLOR = [17, 103, 125];
 
 const GROUND_LEVEL = 1.5;
+const SCALED_GROUND_LEVEL = scale(GROUND_LEVEL);
 
 const GROUND = image(require('url!ground.png'));
+
+const CLOUDS = [
+  image(require('url!cloud1.png')),
+  image(require('url!cloud2.png')),
+  image(require('url!cloud3.png'))
+];
+
+const CLOUD_SEED = Math.ceil(Math.random() * 100);
+
+const SCALED_WORLD_WIDTH = scale(WIDTH);
+const SCALED_WORLD_HEIGHT = scale(HEIGHT);
 
 const layers = [
   {
@@ -68,7 +80,7 @@ function createGradient(translation) {
 }
 
 function renderBackgroundLayer(layer, translation) {
-  const groundLevel = scale(GROUND_LEVEL);
+  const groundLevel = SCALED_GROUND_LEVEL;
 
   const nextOffset = 1;
 
@@ -87,7 +99,7 @@ function renderBackgroundLayer(layer, translation) {
   ctx.lineWidth = 3;
   ctx.beginPath();
 
-  const bounces = Math.floor(scale(WIDTH) / spaceBetween);
+  const bounces = Math.floor(SCALED_WORLD_WIDTH / spaceBetween);
 
   const y = (val) => canvas.height - groundLevel - val;
 
@@ -144,14 +156,14 @@ function renderGround(translation) {
   const height = width * ratio;
   const pieces = Math.ceil(canvas.width / width) + 1;
 
-  const y = canvas.height - scale(GROUND_LEVEL);
+  const y = canvas.height - SCALED_GROUND_LEVEL;
   ctx.save();
 
   ctx.strokeStyle = '#736c61';
   ctx.fillStyle = '#7f786f';
   ctx.lineWidth = 2;
 
-  rectPath(0, y, scale(WIDTH), scale(GROUND_LEVEL));
+  rectPath(0, y, SCALED_WORLD_WIDTH, SCALED_GROUND_LEVEL);
   ctx.fill();
   ctx.stroke();
 
@@ -166,13 +178,56 @@ function renderGround(translation) {
 
 }
 
-export function render(translation) {
+function renderClouds(translation, elapsedTime) {
+  /*
+   * TODO
+   * - normal distribution
+   * - would be cool if some clouds would be on top of player
+   */
+
+  const random = randomGenerator(CLOUD_SEED);
+
+  const base = canvas.height - SCALED_GROUND_LEVEL - 200;
+
+  const maxX = SCALED_WORLD_WIDTH;
+
+  for(let i = 0; i < WIDTH / 10; i++) {
+    ctx.save();
+
+    ctx.scale(0.75, 0.75);
+
+    const movement = elapsedTime * random();
+    const sprite = CLOUDS[Math.floor(random() * CLOUDS.length)];
+    const width = sprite.width;
+
+    const offsetRight = width * 2 + width / 2;
+    const offsetLeft = -width * 2;
+
+    const x = mod((random() * maxX - movement), maxX + offsetRight);
+    const y = base - random() * (SCALED_WORLD_HEIGHT / 2);
+
+    ctx.translate(-translation.x + x + offsetLeft, y);
+
+    ctx.drawImage(sprite, sprite.width, sprite.height);
+
+    ctx.restore();
+  }
+
+}
+
+export function render(translation, elapsedTime) {
   ctx.fillStyle = createGradient(translation);
   ctx.fillRect(-translation.x, -translation.y, canvas.width, canvas.height);
 
-  layers.forEach((layer) => {
-    renderBackgroundLayer(layer, translation);
-  });
+
+  renderBackgroundLayer(layers[0], translation);
+  renderBackgroundLayer(layers[1], translation);
+  renderBackgroundLayer(layers[2], translation);
+
+  renderClouds(translation, elapsedTime);
+
+  renderBackgroundLayer(layers[3], translation);
+
 
   renderGround(translation);
 }

@@ -19,13 +19,13 @@ ticker.on('data', framerate =>
   $fps.innerHTML = Math.round(framerate)
 );
 
-export function render({player, bullets, crates, planes}) {
+export function render({player, bullets, crates, planes, elapsedTime}) {
   ctx.save();
 
   const translation = cameraTranslation(player);
   ctx.translate(translation.x, translation.y);
 
-  renderBackground(translation);
+  renderBackground(translation, elapsedTime);
 
   ctx.translate(0, GROUND_LEVEL);
 

@@ -51,6 +51,10 @@ export function getId() {
   return id;
 }
 
+export function mod(num, n) {
+  return ((num % n) + n) % n;
+}
+
 export function createCollisionDispatcher(collisionHandlers) {
   return function handleCollisions(world) {
     for(let {bodyA, bodyB} of world.impacts) {
