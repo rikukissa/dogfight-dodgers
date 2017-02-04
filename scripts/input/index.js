@@ -1,4 +1,4 @@
-import Bacon from 'baconjs';
+import {Observable} from 'rxjs';
 import extend from 'extend';
 
 import {
@@ -31,23 +31,23 @@ function initialState() {
 
 let inputState = initialState();
 
-const keyDown$ = Bacon.fromEvent(window, 'keydown')
-  .map('.keyCode').filter(c => keys.hasOwnProperty(c))
+const keyDown$ = Observable.fromEvent(window, 'keydown')
+  .map(({ keyCode }) => keyCode).filter(c => keys.hasOwnProperty(c))
   .map((keyCode) => ({[keys[keyCode]]: true}));
 
-const keyUp$ = Bacon.fromEvent(window, 'keyup')
-  .map('.keyCode').filter(c => keys.hasOwnProperty(c))
+const keyUp$ = Observable.fromEvent(window, 'keyup')
+  .map(({ keyCode }) => keyCode).filter(c => keys.hasOwnProperty(c))
   .map((keyCode) => ({[keys[keyCode]]: false}));
 
-const keysDown$ = keyUp$.merge(keyDown$)
-  .scan(inputState.keys, extend);
 
-const shoot$ = Bacon.fromEvent(window, 'keydown')
-  .map('.keyCode')
+const shoot$ = Observable.fromEvent(window, 'keydown')
+  .map(({ keyCode }) => keyCode)
   .filter((c) => c === SPACE_KEY);
 
-keysDown$.onValue(value => inputState.keys = value);
-shoot$.onValue(() => inputState.shoot.push(true));
+const keysDown$ = keyUp$.merge(keyDown$).scan(extend, inputState.keys);
+
+keysDown$.subscribe(value => inputState.keys = value);
+shoot$.subscribe(() => inputState.shoot.push(true));
 
 export function getState() {
   return inputState;
