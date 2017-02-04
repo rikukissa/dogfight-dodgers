@@ -4,16 +4,18 @@ import {create} from 'plane';
 import crate from 'crate';
 import extend from 'extend';
 import {createCollisionDispatcher} from 'utils';
+import curry from 'lodash.curry';
+import compose from 'lodash.compose';
 
 const MAX_SPEED = 0.7;
 const KEY_ROTATION = 0.05;
 
-const collisionHandlers = new Map();
+// const collisionHandlers = new Map();
 
-collisionHandlers.set(crate, function(player) {
-  player.bullets += 20;
-  return player;
-});
+// collisionHandlers.set(crate, function(player) {
+//   player.bullets += 20;
+//   return player;
+// });
 
 export function initial(world) {
   return extend(create(null, world), {
@@ -36,46 +38,69 @@ function rotatePlane(player, degrees) {
   return degrees;
 }
 
-function createNewBullets(input) {
-  this.createdBullets = input.shoot.slice(0, this.bullets).map(() => true);
-  this.bullets -= this.createdBullets.length;
-  return this;
-}
+// const handleCollisions = createCollisionDispatcher(collisionHandlers);
 
-const handleCollisions = createCollisionDispatcher(collisionHandlers);
+const createNewBullets = curry(function createNewBullets(input, player) {
 
-export function update(player, input, world) {
+  const createdBullets = input.shoot.slice(0, player.bullets).map(() => true);
+  const bullets = player.bullets - player.createdBullets.length;
+
+  return {
+    ...player,
+    createdBullets,
+    bullets
+  };
+});
+
+const updateForces = curry(function (delta, input, player) {
+  let angle = player.body.angle;
+  let thrust = player.thrust;
 
   if(input.keys.down) {
-    player.body.angle += rotatePlane(player, -KEY_ROTATION) * input.delta;
+    angle += rotatePlane(player, -KEY_ROTATION) * delta;
 
-    if(player.thrust < MAX_SPEED) {
-      player.thrust += 0.005 * input.delta;
+    if(thrust < MAX_SPEED) {
+      thrust += 0.005 * delta;
     }
 
   } else if(input.keys.up) {
-    player.body.angle += rotatePlane(player, KEY_ROTATION) * input.delta;
+    angle += rotatePlane(player, KEY_ROTATION) * delta;
   }
 
+  const deltaAngle = Math.sin(angle - RADIAN / 2);
+  const drag = 0.005 * deltaAngle * delta;
 
-  player.thrust = Math.min(MAX_SPEED, player.thrust);
+  return {
+    ...player,
+    thrust: Math.min(MAX_SPEED, thrust) - drag,
+    body: {
+      ...player.body,
+      angle
+    }
+  };
+});
 
-  const deltaAngle = Math.sin(player.body.angle - RADIAN / 2);
-  player.thrust -= 0.005 * deltaAngle;
+const updatePosition = curry(function (delta, player) {
+  const x = player.body.position[0];
+  const y = player.body.position[1] <= GROUND_LEVEL ? GROUND_LEVEL : player.body.position[1];
 
+  return {
+    ...player,
+    body: {
+      ...player.body,
+      position: [
+        x + player.thrust * Math.sin(player.body.angle + RADIAN * 0.25) * delta,
+        y + player.thrust * Math.cos(player.body.angle + RADIAN * 0.25) * delta
+      ]
+    }
+  };
+});
 
-  if(player.body.position[1] <= GROUND_LEVEL) {
-    player.body.position[1] = GROUND_LEVEL;
-  }
-
-  player.body.position[0] += player.thrust * Math.sin(player.body.angle + RADIAN * 0.25)
-    * input.delta;
-
-  player.body.position[1] += player.thrust * Math.cos(player.body.angle + RADIAN * 0.25)
-    * input.delta;
-
-  return player
-    ::handleCollisions(world)
-    ::createNewBullets(input);
+export function update(player, input, delta) {
+  return compose(
+    createNewBullets(input),
+    updatePosition(delta),
+    updateForces(delta)
+  )(input, player);
 }
 

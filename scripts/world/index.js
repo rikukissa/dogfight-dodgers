@@ -7,17 +7,17 @@ export const HEIGHT = 100;
 export const GROUND_LEVEL = 0;
 
 export function initial(world) {
-  const body = new p2.Body({mass: 0});
-  const shape = new p2.Plane();
-  shape.material = ground;
-  body.addShape(shape);
-  world.addBody(body);
+  // const body = new p2.Body({mass: 0});
+  // const shape = new p2.Plane();
+  // shape.material = ground;
+  // body.addShape(shape);
+  // world.addBody(body);
 
   return world;
 }
 
 export function update(world, input) {
-  world.step(WORLD_SPEED, input.delta * WORLD_SPEED, MAX_SUBSTEPS);
+  // world.step(WORLD_SPEED, input.delta * WORLD_SPEED, MAX_SUBSTEPS);
 
   const {emitImpactEvent, narrowphase} = world;
 

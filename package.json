@@ -55,12 +55,13 @@
     "webpack-notifier": "^1.2.1"
   },
   "dependencies": {
-    "animation-frame": "^0.2.4",
     "browser-audio": "^1.0.2",
     "deep-extend": "^0.4.0",
     "degrees-radians": "^1.0.1",
     "extend": "^2.0.1",
     "lodash.clone": "^3.0.2",
+    "lodash.compose": "^2.4.1",
+    "lodash.curry": "^4.1.1",
     "lodash.every": "^3.2.3",
     "lodash.get": "^3.7.0",
     "lodash.identity": "^3.0.0",

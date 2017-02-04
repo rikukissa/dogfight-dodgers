@@ -1,4 +1,3 @@
-import p2 from 'p2';
 import {GROUND_LEVEL} from 'world';
 
 const TYPE = {};
@@ -15,33 +14,24 @@ function updatePlane(plane, newPlane) {
 }
 
 export function create(opts, world) {
-  const body = new p2.Body({
-    mass: 0,
-    angle: 0,
-    position: [3, GROUND_LEVEL + HEIGHT / 2]
-  });
 
-  body.TYPE = TYPE;
-  world.addBody(body);
-
-  body.addShape(new p2.Box({
-    width: WIDTH,
-    height: HEIGHT
-  }));
+  // body.addShape(new p2.Box({
+  //   width: WIDTH,
+  //   height: HEIGHT
+  // }));
 
   const plane = {
-    body: body,
     thrust: 0,
     throttle: 0,
     healt: 1,
     bullets: 20
   };
 
-  if(!opts) {
-    return plane;
-  }
+  // if(!opts) {
+  //   return plane;
+  // }
 
-  updatePlane(plane, opts);
+  // updatePlane(plane, opts);
 
   return plane;
 }

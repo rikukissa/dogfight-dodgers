@@ -47,7 +47,7 @@ export function initial(world) {
   };
 }
 
-function floatAround() {
+function floatAround(delta) {
   const movement = Math.sin(this.lived / 30 % (Math.PI * 2)) * 0.33;
   this.body.position[1] = this.initialPosition.y + movement;
   return this;
@@ -73,7 +73,7 @@ export function update(crates, input, world) {
       return cratesCollidingPlane.indexOf(crate.body) === -1;
     }).map(crate => {
       crate.lived += input.delta;
-      return crate::floatAround();
+      return crate::floatAround(input.delta);
     }),
     sounds: cratesCollidingPlane.length === 0 ? [] : ['destroy']
   };
