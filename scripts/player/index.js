@@ -10,13 +10,6 @@ import compose from 'lodash.compose';
 const MAX_SPEED = 0.7;
 const KEY_ROTATION = 0.05;
 
-// const collisionHandlers = new Map();
-
-// collisionHandlers.set(crate, function(player) {
-//   player.bullets += 20;
-//   return player;
-// });
-
 export function initial(world) {
   return extend(create(null, world), {
     createdBullets: []
@@ -37,20 +30,6 @@ function rotatePlane(player, degrees) {
 
   return degrees;
 }
-
-// const handleCollisions = createCollisionDispatcher(collisionHandlers);
-
-const createNewBullets = curry(function createNewBullets(input, player) {
-
-  const createdBullets = input.shoot.slice(0, player.bullets).map(() => true);
-  const bullets = player.bullets - player.createdBullets.length;
-
-  return {
-    ...player,
-    createdBullets,
-    bullets
-  };
-});
 
 const updateForces = curry(function (delta, input, player) {
   let angle = player.body.angle;
@@ -98,7 +77,6 @@ const updatePosition = curry(function (delta, player) {
 
 export function update(player, input, delta) {
   return compose(
-    createNewBullets(input),
     updatePosition(delta),
     updateForces(delta)
   )(input, player);

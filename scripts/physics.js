@@ -8,6 +8,7 @@ import {
 } from 'constants';
 
 import createPlaneBody, { update as updatePlaneBody } from 'plane/body';
+import { update as updateBulletBodies } from 'bullets/body';
 
 const engine = new World({
   gravity: [0, -9.82]
@@ -34,21 +35,31 @@ engine.addBody(playerBody);
 
 const stateSubject$ = new Subject();
 
-export function update(state) {
+function updateWorld(prevState, state) {
   updatePlaneBody(playerBody, state);
+  const bullets = updateBulletBodies(engine, prevState, state);
+
   engine.step(WORLD_SPEED, state.lastDelta * WORLD_SPEED, MAX_SUBSTEPS);
 
-  stateSubject$.next({
+  return {
+    bullets,
     player: {
       angle: playerBody.angle,
       position: [...playerBody.position]
     }
-  });
+  };
 }
 
-export const state$ = stateSubject$.startWith({
+const initialState = {
+  bullets: [],
   player: {
     angle: playerBody.angle,
     position: [...playerBody.position]
   }
-});
+};
+
+export function update(state) {
+  stateSubject$.next(state);
+}
+
+export const state$ = stateSubject$.scan(updateWorld, initialState).startWith(initialState);

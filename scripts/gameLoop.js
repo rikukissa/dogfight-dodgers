@@ -1,17 +1,30 @@
-import AnimationFrame from 'animation-frame';
-import {FRAME_RATE, WORLD_SPEED} from 'constants';
-import { Observable } from 'rxjs';
-import requestAnimationFrame from 'rxjs/scheduler/animationFrame';
+import {update as updateWorld} from 'world';
+import {
+  update as updatePlayer,
+  initial as initialPlayer
+} from 'player';
 
-export default Observable.interval(requestAnimationFrame).scan(function timeDelta({ lastTime }) {
-  const current = Date.now();
-  const difference = current - lastTime;
+import {
+  update as updateBullets,
+  initial as initialBullets
+} from 'bullets';
+
+export const initialState = {
+  player: initialPlayer(),
+  bullets: [],
+  collisions: [],
+  elapsedTime: 0
+};
+
+export default (state, { time: { delta }, physics, input}) => {
+  const player = updatePlayer({...state.player, body: physics.player }, input, delta);
+  const bullets = updateBullets(state, player, input, delta);
 
   return {
-    lastTime: current,
-    difference,
-    delta: difference / (WORLD_SPEED * 1000)
+    player,
+    bullets,
+    collisions: state.collisions,
+    lastDelta: delta,
+    elapsedTime: state.elapsedTime + delta
   };
-}, {
-  lastTime: Date.now()
-})
+}

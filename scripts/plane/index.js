@@ -15,23 +15,12 @@ function updatePlane(plane, newPlane) {
 
 export function create(opts, world) {
 
-  // body.addShape(new p2.Box({
-  //   width: WIDTH,
-  //   height: HEIGHT
-  // }));
-
   const plane = {
     thrust: 0,
     throttle: 0,
     healt: 1,
     bullets: 20
   };
-
-  // if(!opts) {
-  //   return plane;
-  // }
-
-  // updatePlane(plane, opts);
 
   return plane;
 }

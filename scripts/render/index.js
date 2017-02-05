@@ -31,7 +31,7 @@ export function render({player, bullets, crates, planes, elapsedTime}) {
 
   renderPlane(player);
 
-  // bullets.bullets.forEach(renderBullet);
+  bullets.forEach(renderBullet);
   // crates.crates.forEach(renderCrate);
 
   for(let id in planes) {

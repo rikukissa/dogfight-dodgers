@@ -1,5 +1,6 @@
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import extend from 'extend';
+import { toObject } from 'utils';
 
 import {
   SPACE_KEY,
@@ -17,45 +18,41 @@ const keys = {
   [RIGHT_KEY]: 'right'
 };
 
-function initialState() {
-  return {
-    keys: {
-      up: false,
-      down: false,
-      left: false,
-      right: false
-    },
-    shoot: []
-  };
-}
+const initialState = {
+  keys: {
+    up: false,
+    down: false,
+    left: false,
+    right: false
+  },
+  shoot: false
+};
 
-let inputState = initialState();
+const flush$ = new Subject();
 
 const keyDown$ = Observable.fromEvent(window, 'keydown')
   .map(({ keyCode }) => keyCode).filter(c => keys.hasOwnProperty(c))
-  .map((keyCode) => ({[keys[keyCode]]: true}));
+  .map((keyCode) => ({[keys[keyCode]]: true}))
 
 const keyUp$ = Observable.fromEvent(window, 'keyup')
   .map(({ keyCode }) => keyCode).filter(c => keys.hasOwnProperty(c))
   .map((keyCode) => ({[keys[keyCode]]: false}));
 
-
-const shoot$ = Observable.fromEvent(window, 'keydown')
+const space$ = Observable.fromEvent(window, 'keydown')
   .map(({ keyCode }) => keyCode)
   .filter((c) => c === SPACE_KEY);
 
-const keysDown$ = keyUp$.merge(keyDown$).scan(extend, inputState.keys);
+const keys$ = keyUp$
+  .merge(keyDown$)
+  .scan(extend, initialState.keys).map(toObject('keys'));
 
-keysDown$.subscribe(value => inputState.keys = value);
-shoot$.subscribe(() => inputState.shoot.push(true));
+const shoot$ = space$.mapTo(true).merge(flush$.mapTo(false))
+  .map(toObject('shoot'));
 
-export function getState() {
-  return inputState;
-}
+export default keys$.merge(shoot$)
+  .scan(extend, initialState)
+  .startWith(initialState);
 
 export function flush() {
-  inputState = {
-    keys: inputState.keys,
-    shoot: []
-  }
+  flush$.next({});
 }
