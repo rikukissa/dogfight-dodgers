@@ -15,11 +15,11 @@ export const muted$ = Observable.fromEvent($mute, 'change')
 
 const soundBus$ = new Subject();
 
-muted$
-.switchMap((muted) => muted ? Observable.never(): soundBus$)
-.subscribe(({bullets}) => {
-  bullets.sounds.created.forEach(() => shootSound.play());
-});
+// muted$
+// .switchMap((muted) => muted ? Observable.never(): soundBus$)
+// .subscribe(({bullets}) => {
+//   bullets.sounds.created.forEach(() => shootSound.play());
+// });
 
 export const playSounds = ::soundBus$.next;
 

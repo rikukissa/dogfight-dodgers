@@ -1,42 +1,28 @@
+import curry from 'lodash.curry';
+import compose from 'lodash.compose';
 import {GROUND_LEVEL} from 'world';
+import {RADIAN} from 'constants';
 
-const TYPE = {};
-export {TYPE as default};
-
+export const TYPE = 'adf';
 export const WIDTH = 1.6;
 export const HEIGHT = 1;
+export const KEY_ROTATION = 0.05;
+
+export const MAX_SPEED = 10;
+export const MAX_THRUST = 10;
 
 
-function updatePlane(plane, newPlane) {
-  plane.body.position[0] = newPlane.body.position[0];
-  plane.body.position[1] = newPlane.body.position[1];
-  plane.body.angle = newPlane.body.angle;
-}
-
-export function create(opts, world) {
-
-  const plane = {
-    thrust: 0,
-    throttle: 0,
-    healt: 1,
-    bullets: 20
-  };
-
+export function update(plane, delta) {
   return plane;
 }
 
-export const initial = () => ({});
-
-export function update(planes, input, world) {
-  for(let id in input.planes) {
-    const plane = planes[id];
-
-    if(!plane) {
-      planes[id] = create(input.planes[id], world);
-      continue;
-    }
-
-    updatePlane(plane, input.planes[id]);
-  }
-  return planes;
+export function create(opts) {
+  return {
+    thrust: 0,
+    throttle: 0,
+    angularForce: 0,
+    healt: 1,
+    bullets: 20,
+    ...opts
+  };
 }

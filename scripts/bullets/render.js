@@ -6,7 +6,7 @@ import {
 
 import {ctx} from 'render/canvas';
 
-import {WIDTH, HEIGHT} from 'bullet';
+import {WIDTH, HEIGHT} from 'bullets';
 
 const SPRITE = image(require('url!bullet.png'));
 

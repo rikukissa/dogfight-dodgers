@@ -7,6 +7,7 @@ var extend = require('extend');
 var production = process.env.NODE_ENV == 'production';
 
 var entries = ['./scripts/index'];
+
 var plugins = [
   require('webpack-notifier')
 ];
@@ -14,12 +15,10 @@ var plugins = [
 
 if(!production) {
   entries = [
-    'webpack-dev-server/client?http://localhost:9000',
-    'webpack/hot/only-dev-server'
+    'webpack-dev-server/client?http://localhost:9000'
   ].concat(entries);
 
   plugins = [
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
   ].concat(plugins);
 }
@@ -33,6 +32,9 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/dist/'
   },
+  node: {
+    fs: 'empty'
+  },
   plugins: plugins,
   resolve: {
     modulesDirectories: ['./scripts', './node_modules', 'assets'],
@@ -42,7 +44,7 @@ module.exports = {
     loaders: [{
       test: /\.js$/,
       exclude: /node_modules/,
-      loaders: ['monkey-hot', 'babel?stage=0']
+      loaders: ['babel']
     }, {
       test: /\.css$/,
       loaders: ['style', 'css']
@@ -55,15 +57,7 @@ module.exports = {
     }, {
       test: /\.json$/,
       loader: 'json-loader'
-    }
-      // ,
-      // {
-      //   test: /\.(jpe?g|png|gif|svg)$/i,
-      //   loaders: [
-      //     'url?limit=800!image!image-maxsize?useImageMagick=true'
-      //   ]
-      // }
-    ]
+    }]
   }
 };
 

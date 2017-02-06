@@ -1,5 +1,7 @@
 import {WIDTH as PLANE_WIDTH, HEIGHT as PLANE_HEIGHT} from 'plane';
-import {RADIAN} from 'constants';
+import {WORLD_SPEED, RADIAN} from 'constants';
+import {BULLET_CREATED} from 'network/actions';
+import {getDelta} from 'utils';
 
 export const WIDTH = 0.75;
 export const HEIGHT = 0.3;
@@ -24,6 +26,7 @@ function initialBullet(player) {
 
   return {
     id: Date.now(),
+    createdBy: player.id,
     body: {
       mass: 0.1,
       angle: player.body.angle,
@@ -61,14 +64,21 @@ function create(player) {
   return initialBullet(player);
 }
 
-export function update({bullets, collisions}, player, input, delta) {
+export function update({bullets, collisions, currentTime}, player, actions, delta) {
 
   const updatedBullets = bullets.map(updateBullet.bind(null, delta, collisions))
     .filter((bullet) => !(bullet.ticksLived > ALIVE_TIME || bullet.exploded));
 
-  const newBullets = input.shoot ? [create(player)] : [];
+  const shooting =
+    actions.filter((action) => action.type === 'KEYDOWN' && action.payload === 'space').length > 0;
 
-  return updatedBullets.concat(newBullets);
+  const userCreatedBullets = shooting ? [create(player)] : [];
+  const enemyCreatedBullets = actions.filter(({type}) => type === BULLET_CREATED).map((action) => {
+    const totalDelta = delta + getDelta(currentTime, action.payload.currentTime);
+    return updateBullet(totalDelta, [], action.payload.bullet);
+  });
+
+  return updatedBullets.concat(userCreatedBullets).concat(enemyCreatedBullets);
 }
 
 

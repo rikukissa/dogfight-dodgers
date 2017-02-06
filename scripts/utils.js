@@ -1,5 +1,10 @@
 import zipObject from 'lodash.zipobject';
 import radians from 'degrees-radians';
+import {WORLD_SPEED} from 'constants';
+
+export function getDelta(now, then) {
+  return (now - then) / (WORLD_SPEED * 100);
+}
 
 export function randomGenerator(seed = 1) {
   return function() {
@@ -38,11 +43,11 @@ export function degrees(rad) {
 }
 
 export function getId() {
-  const storedId = window.localStorage.getItem('playerId');
+  // const storedId = window.localStorage.getItem('playerId');
 
-  if(storedId) {
-    return storedId;
-  }
+  // if(storedId) {
+  //   return storedId;
+  // }
 
   const id = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 

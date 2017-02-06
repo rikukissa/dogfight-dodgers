@@ -1,26 +1,25 @@
-import {GROUND_LEVEL} from 'world';
-import {RADIAN} from 'constants';
-import {create} from 'plane';
-import crate from 'crate';
 import extend from 'extend';
-import {createCollisionDispatcher} from 'utils';
 import curry from 'lodash.curry';
 import compose from 'lodash.compose';
+import {getId} from 'utils';
 
-const MAX_SPEED = 0.7;
-const KEY_ROTATION = 0.05;
+import {RADIAN} from 'constants';
+import {MAX_SPEED, MAX_THRUST, KEY_ROTATION, update as updatePlane, create} from 'plane';
+import crate from 'crate';
+import {createCollisionDispatcher} from 'utils';
 
-export function initial(world) {
-  return extend(create(null, world), {
-    createdBullets: []
+export function initial() {
+  return create({
+    id: getId()
   });
 }
 
-function rotatePlane(player, degrees) {
-  const y = player.body.position[1];
+function rotatePlane(plane, degrees) {
+  const y = plane.body.position[1];
+  const speed = Math.sqrt(Math.pow(plane.body.velocity[0], 2) + Math.pow(plane.body.velocity[1], 2))
 
   if(y < 2) {
-    const deltaSpeed = player.thrust / MAX_SPEED;
+    const deltaSpeed = speed / MAX_SPEED;
     return ((degrees / 10) * deltaSpeed);
   }
 
@@ -31,54 +30,32 @@ function rotatePlane(player, degrees) {
   return degrees;
 }
 
-const updateForces = curry(function (delta, input, player) {
-  let angle = player.body.angle;
-  let thrust = player.thrust;
+const updateForces = curry(function (delta, keys, plane) {
+  let angle = plane.body.angle;
+  let thrust = plane.thrust;
 
-  if(input.keys.down) {
-    angle += rotatePlane(player, -KEY_ROTATION) * delta;
+  const throttling = keys.down;
+  const breaking = keys.up;
 
+  if(throttling) {
+    angle += rotatePlane(plane, -KEY_ROTATION) * delta;
     if(thrust < MAX_SPEED) {
-      thrust += 0.005 * delta;
+      thrust += (MAX_THRUST / 100) * delta;
     }
-
-  } else if(input.keys.up) {
-    angle += rotatePlane(player, KEY_ROTATION) * delta;
+  } else if(breaking) {
+    angle += rotatePlane(plane, KEY_ROTATION) * delta;
   }
 
-  const deltaAngle = Math.sin(angle - RADIAN / 2);
-  const drag = 0.005 * deltaAngle * delta;
-
   return {
-    ...player,
-    thrust: Math.min(MAX_SPEED, thrust) - drag,
+    ...plane,
+    thrust,
     body: {
-      ...player.body,
+      ...plane.body,
       angle
     }
   };
 });
 
-const updatePosition = curry(function (delta, player) {
-  const x = player.body.position[0];
-  const y = player.body.position[1] <= GROUND_LEVEL ? GROUND_LEVEL : player.body.position[1];
-
-  return {
-    ...player,
-    body: {
-      ...player.body,
-      position: [
-        x + player.thrust * Math.sin(player.body.angle + RADIAN * 0.25) * delta,
-        y + player.thrust * Math.cos(player.body.angle + RADIAN * 0.25) * delta
-      ]
-    }
-  };
-});
-
-export function update(player, input, delta) {
-  return compose(
-    updatePosition(delta),
-    updateForces(delta)
-  )(input, player);
+export function update (state, delta) {
+  return updatePlane(updateForces(delta, state.keys, state.player), delta);
 }
-
